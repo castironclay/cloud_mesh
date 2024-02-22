@@ -6,7 +6,6 @@ data "exoscale_template" "my_template" {
 
 resource "exoscale_compute_instance" "my_instance" {
   zone = "ch-gva-2"
-  count = 5
   name = "my-instance"
 
   template_id = data.exoscale_template.my_template.id
