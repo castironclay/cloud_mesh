@@ -29,6 +29,7 @@ resource "aws_instance" "host" {
     }
   }
 }
+
 resource "aws_key_pair" "host_key" { # aws_key_pair resource
   key_name   = var.name
   public_key = file("./id_rsa.pub")
