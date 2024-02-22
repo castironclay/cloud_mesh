@@ -39,8 +39,8 @@ def make_op_path(base_path: str) -> UUID:
     logger.info(f"Creating path: {directory_path}")
     directory_path.mkdir()
 
-    # logger.info(f"Deleting path: {directory_path}")
-    # directory_path.rmdir()
+    logger.info(f"Deleting path: {directory_path}")
+    directory_path.rmdir()
 
     return op_name
 
@@ -64,12 +64,9 @@ if __name__ == "__main__":
 
     creds = read_creds_file(creds_file)
     providers = gather_providers(providers)
-
     valid_providers = providers_with_creds(creds, providers)
-
-    logger.info(valid_providers)
+    logger.success(f"Credentials discovered for {valid_providers}")
     chain_id = make_op_path(base_path)
-
     dest_directory = f"{base_path}/{chain_id}"
-    folders_to_copy = valid_providers
-    copy_specific_modules(script_path, dest_directory, folders_to_copy)
+
+    copy_specific_modules(script_path, dest_directory, valid_providers)
