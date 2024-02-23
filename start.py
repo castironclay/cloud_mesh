@@ -9,7 +9,10 @@ import yaml
 from jinja2 import Environment, FileSystemLoader
 from loguru import logger
 
-environment = Environment(loader=FileSystemLoader(f"{os.path.dirname(os.path.abspath(__file__))}/templates/"))
+environment = Environment(
+    loader=FileSystemLoader(f"{os.path.dirname(os.path.abspath(__file__))}/templates/")
+)
+
 
 def read_creds_file(creds) -> dict:
     with open(creds, "r") as creds_file:
@@ -85,9 +88,11 @@ def setup_terraform(
     for index, module in enumerate(select_two):
         provider = f"hop{index}" + "_" + str(module)
         template = environment.get_template("main.tf.j2")
-
-        with open(filename, mode="w", encoding="utf-8") as message:
-        message.write(content)
+        content = template.render(hop_name=provider)
+        with open(
+            f"{base_path}/{chain_id}/{provider}.tf", mode="w", encoding="utf-8"
+        ) as message:
+            message.write(content)
 
 
 if __name__ == "__main__":
