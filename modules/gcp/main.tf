@@ -1,6 +1,3 @@
-provider "google" {
-  project = var.GOOGLE_PROJECT
-}
 
 data "google_compute_image" "ubuntu_image" {
   family  = "debian-11"

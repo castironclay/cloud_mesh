@@ -1,7 +1,6 @@
 import os
 import random
 import shutil
-import subprocess
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -62,6 +61,7 @@ def copy_specific_modules(
 ) -> None:
     src_dir = os.path.join(script_path, "modules")
     for index, module in enumerate(modules_to_copy):
+        index+=1
         dest_folder_name = f"hop{index}" + "_" + str(module)
         src_folder_path = os.path.join(src_dir, module)
         dest_folder_path = os.path.join(dest_dir, dest_folder_name)

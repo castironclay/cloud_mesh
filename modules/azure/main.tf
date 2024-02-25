@@ -1,11 +1,3 @@
-provider "azurerm" {
-  tenant_id       = var.AZ_TENANT
-  client_secret   = var.AZ_SECRET
-  subscription_id = var.AZ_SUB_ID
-  client_id       = var.AZ_APP_ID
-  features {}
-}
-
 resource "azurerm_resource_group" "resource_group" {
   location = var.location
   name     = var.name

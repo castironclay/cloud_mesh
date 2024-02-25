@@ -1,7 +1,3 @@
-provider "aws" {
-  region = var.region
-}
-
 resource "aws_instance" "host" {
   vpc_security_group_ids      = [aws_security_group.instance_sg.id]
   associate_public_ip_address = true
