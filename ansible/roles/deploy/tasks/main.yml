@@ -19,12 +19,12 @@
 - name: Update stats with hop1 port
   lineinfile:
     path: "{{ project_path }}/stats.yml"
-    line: "hop0_port: {{ hop1_port }}"
+    line: "hop1_port: {{ hop1_port }}"
 
 - name: Update stats with hop2 port
   lineinfile:
     path: "{{ project_path }}/stats.yml"
-    line: "hop1_port: {{ hop2_port }}"
+    line: "hop2_port: {{ hop2_port }}"
 
 - name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
   community.crypto.openssh_keypair:
@@ -68,7 +68,7 @@
   replace:
     path: "{{ project_path}}/{{ provider1 }}_hop1/vars.tf"
     regexp: "wireguardport"
-    replace: "{{ hop0_port }}"
+    replace: "{{ hop1_port }}"
 
 - name: Move vars file 2
   template:
@@ -85,7 +85,7 @@
   replace:
     path: "{{ project_path}}/{{ provider2 }}_hop2/vars.tf"
     regexp: "wireguardport"
-    replace: "{{ hop1_port }}"
+    replace: "{{ hop2_port }}"
 
 - name: Create main.tf
   template:
@@ -104,10 +104,3 @@
 
 - name: Host 2
   include_tasks: host2.yml
-
-- name: Host 3
-  include_tasks: host3.yml
-
-- name: Sleep for 1
-  wait_for:
-    timeout: 1

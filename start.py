@@ -2,13 +2,13 @@ import os
 import random
 import shutil
 import subprocess
-from rich import print as rprint
 from pathlib import Path
 from uuid import UUID, uuid4
 
 import yaml
 from jinja2 import Environment, FileSystemLoader
 from loguru import logger
+from rich import print as rprint
 
 environment = Environment(
     loader=FileSystemLoader(f"{os.path.dirname(os.path.abspath(__file__))}/templates/")
@@ -73,7 +73,7 @@ def copy_specific_modules(
 
 def setup_terraform(
     script_path: str, creds_file: str, providers: str, base_path: str
-) -> str:
+) -> tuple:
     creds = read_creds_file(creds_file)
     providers = gather_providers(providers)
 
@@ -99,7 +99,10 @@ def setup_terraform(
     project_path = f"{base_path}/{chain_id}/"
     return project_path, select_two, chain_id
 
-def ansible_deploy(script_path: str, project_path: str, select_two: list, chain_id: str):
+
+def ansible_deploy(
+    script_path: str, project_path: str, select_two: list, chain_id: str
+):
     command = f"ansible-playbook {script_path}/ansible/deploy.yml -e project_path={project_path} -e provider1={select_two[0]} -e provider2={select_two[1]} -e project_id={chain_id}"
 
     process = subprocess.Popen(
@@ -116,12 +119,13 @@ def ansible_deploy(script_path: str, project_path: str, select_two: list, chain_
 
 
 if __name__ == "__main__":
-
     script_path = os.path.dirname(os.path.abspath(__file__))
     creds_file = f"{script_path}/keys.yaml"
     providers = f"{script_path}/providers.yaml"
     base_path = "/tmp"
 
-    project_path, select_two, chain_id = setup_terraform(script_path, creds_file, providers, base_path)
+    project_path, select_two, chain_id = setup_terraform(
+        script_path, creds_file, providers, base_path
+    )
 
     ansible_deploy(script_path, project_path, select_two, chain_id)
