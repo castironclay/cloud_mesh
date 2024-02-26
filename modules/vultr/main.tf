@@ -8,4 +8,3 @@ resource "vultr_instance" "my_instance" {
   os_id  = "477" # Debian 11
 }
 
-variable "VULTR_TOKEN" {}

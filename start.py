@@ -83,20 +83,21 @@ def setup_terraform(
     select_two = choose_two(valid_providers)
     logger.success(f"Providers chosen: {select_two}")
 
+    # Move modules to project directory
     chain_id = make_op_path(base_path)
     dest_directory = f"{base_path}/{chain_id}/modules"
-
     copy_specific_modules(script_path, dest_directory, select_two)
-    for index, module in enumerate(select_two):
-        provider = f"hop{index}" + "_" + str(module)
-        template = environment.get_template("main.tf.j2")
+
+    # Create required Terraform vars files for account credentials
+    for module in select_two:
+        template = environment.get_template(f"{module}_vars.tf")
         content = template.render(hop_name=provider)
         with open(
             f"{base_path}/{chain_id}/{provider}.tf", mode="w", encoding="utf-8"
         ) as message:
             message.write(content)
 
-    project_path = f"{base_path}/{chain_id}/"
+    project_path = f"{base_path}/{chain_id}"
     return project_path, select_two, chain_id
 
 
@@ -109,7 +110,6 @@ def ansible_deploy(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
     )
 
-    # Read and print the output in real-time
     while True:
         line = process.stdout.readline()
         if not line:
