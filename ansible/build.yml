@@ -1,0 +1,106 @@
+---
+- hosts: localhost
+  pre_tasks:
+    - name: Create random port 1
+      set_fact:
+        hop1_port_random: "{{ (50000) | random(start=20000) }}"
+      run_once: true
+
+    - name: Create random port 2
+      set_fact:
+        hop2_port_random: "{{ (50000) | random(start=20000) }}"
+      run_once: true
+
+    - name: Generate username for hosts
+      set_fact:
+        rand_username: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters')|lower }}"
+      run_once: true
+
+    - name: Set project directory
+      set_fact:
+        project_dir: /tmp
+      run_once: true
+
+  tasks:
+    - name: Deploy role
+      include_role:
+        name: ./roles/deploy
+
+  vars:
+    hop1_port: "{{ hop1_port_random }}"
+    hop2_port: "{{ hop2_port_random }}"
+    username: "{{ rand_username }}"
+    hop1_name: "{{ provider1 }}_hop1"
+    hop2_name: "{{ provider2 }}_hop2"
+
+- hosts: all
+  tasks:
+    - name: Include vars from stats.yml
+      include_vars:
+        file: "../projects/{{ hostvars['localhost']['rand_projectname'] }}/stats.yml"
+  
+    - name: Provision role
+      include_role:
+        name: ./roles/provision
+    
+    - name: Include vars
+      include_vars:
+        file: ./roles/provision/vars/main.yml
+
+- hosts: localhost
+  tasks:
+    - name: Include vars from stats.yml
+      include_vars:
+        file: "../projects/{{ hostvars['localhost']['rand_projectname'] }}/stats.yml"
+
+    - name: Include vars
+      include_vars:
+        file: ./roles/provision/vars/main.yml
+
+    - name: Read server public key
+      shell: "cat {{ project_dir }}/projects/{{ projectname }}/server_pubkey"
+      register: server_public_key
+
+    - name: Generate client keys
+      shell: "cd {{ project_dir }}/projects/{{ projectname }}; wg genkey | tee clientprivatekey | wg pubkey > clientpublickey"
+
+    - name: Read client private key
+      shell: "cat {{ project_dir }}/projects/{{ projectname }}/clientprivatekey"
+      register: client_privatekey
+
+    - name: Copy wg-quick config
+      template:
+        src: ./roles/provision/templates/wg3-client.conf
+        dest: "{{ project_dir }}/projects/{{ projectname }}/wg3-client.conf"
+
+    - name: Copy connect.sh
+      local_action:
+        module: template
+        src: ./roles/provision/templates/connect.sh
+        dest: "{{ project_dir }}/projects/{{ projectname }}/connect.sh"
+
+    - name: Change perms
+      file:
+        dest: "{{ project_dir }}/projects/{{ projectname }}/connect.sh"
+        mode: a+x
+
+    - name: Copy disconnect.sh
+      local_action:
+        module: template
+        src: ./roles/provision/templates/disconnect.sh
+        dest: "{{ project_dir }}/projects/{{ projectname }}/disconnect.sh"
+
+    - name: Change perms
+      file:
+        dest: "{{ project_dir }}/projects/{{ projectname }}/disconnect.sh"
+        mode: a+x
+
+- hosts: localhost
+  tasks:
+    - name: Include vars from stats.yml
+      include_vars:
+        file: "../projects/{{ hostvars['localhost']['rand_projectname'] }}/stats.yml"
+    
+    - name: Configs role
+      include_role:
+        name: ./roles/configs

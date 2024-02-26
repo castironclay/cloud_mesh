@@ -1,0 +1,4 @@
+# Below are all of your deployment details
+---
+hop1_provider: {{ provider1 }}
+hop2_provider: {{ provider2 }}

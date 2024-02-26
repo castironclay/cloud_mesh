@@ -1,6 +1,8 @@
 import os
 import random
 import shutil
+import subprocess
+from rich import print as rprint
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -61,7 +63,7 @@ def copy_specific_modules(
 ) -> None:
     src_dir = os.path.join(script_path, "modules")
     for index, module in enumerate(modules_to_copy):
-        index+=1
+        index += 1
         dest_folder_name = f"hop{index}" + "_" + str(module)
         src_folder_path = os.path.join(src_dir, module)
         dest_folder_path = os.path.join(dest_dir, dest_folder_name)
@@ -71,7 +73,7 @@ def copy_specific_modules(
 
 def setup_terraform(
     script_path: str, creds_file: str, providers: str, base_path: str
-) -> None:
+) -> str:
     creds = read_creds_file(creds_file)
     providers = gather_providers(providers)
 
@@ -94,11 +96,32 @@ def setup_terraform(
         ) as message:
             message.write(content)
 
+    project_path = f"{base_path}/{chain_id}/"
+    return project_path, select_two, chain_id
+
+def ansible_deploy(script_path: str, project_path: str, select_two: list, chain_id: str):
+    command = f"ansible-playbook {script_path}/ansible/deploy.yml -e project_path={project_path} -e provider1={select_two[0]} -e provider2={select_two[1]} -e project_id={chain_id}"
+
+    process = subprocess.Popen(
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
+
+    # Read and print the output in real-time
+    while True:
+        line = process.stdout.readline()
+        if not line:
+            break
+        rprint(line, end="")
+    process.wait()
+
 
 if __name__ == "__main__":
+
     script_path = os.path.dirname(os.path.abspath(__file__))
     creds_file = f"{script_path}/keys.yaml"
     providers = f"{script_path}/providers.yaml"
     base_path = "/tmp"
 
-    setup_terraform(script_path, creds_file, providers, base_path)
+    project_path, select_two, chain_id = setup_terraform(script_path, creds_file, providers, base_path)
+
+    ansible_deploy(script_path, project_path, select_two, chain_id)

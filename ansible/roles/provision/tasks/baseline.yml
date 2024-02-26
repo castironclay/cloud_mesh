@@ -1,0 +1,5 @@
+---
+- name: Include Ubuntu/Debian task
+  include_tasks: debian.yml
+  when: ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+  tags: redeploy

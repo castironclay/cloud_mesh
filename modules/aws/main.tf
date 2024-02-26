@@ -1,3 +1,7 @@
+provider "aws" {
+  region = var.region
+}
+
 resource "aws_instance" "host" {
   vpc_security_group_ids      = [aws_security_group.instance_sg.id]
   associate_public_ip_address = true
@@ -10,7 +14,6 @@ resource "aws_instance" "host" {
   root_block_device {
     delete_on_termination = var.delete_root_volume
   }
-
   tags = {
     Name = var.name
   }
@@ -25,7 +28,6 @@ resource "aws_instance" "host" {
     }
   }
 }
-
 resource "aws_key_pair" "host_key" { # aws_key_pair resource
   key_name   = var.name
   public_key = file("./id_rsa.pub")

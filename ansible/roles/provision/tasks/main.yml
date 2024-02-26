@@ -1,0 +1,109 @@
+---
+- name: Include vars
+  include_vars:
+    file: /skyhook/projects/{{ projectname }}/stats.yml
+  tags: redeploy
+
+- name: Baseline nodes
+  include_tasks: baseline.yml
+  tags: redeploy
+
+- name: Copy setup script to nodes
+  copy:
+    src: ../templates/wg_keygen.sh
+    dest: ~/wg_keygen.sh
+    mode: "0777"
+  tags: redeploy
+
+- name: Execute WG_Keygen
+  command: bash ~/wg_keygen.sh
+  tags: redeploy
+
+- name: Get Key 1
+  command: cat ~/server_privatekey
+  register: server_privatekey
+
+- name: Get Key 2
+  command: cat ~/server_publickey
+  register: server_publickey
+
+- name: Save public key
+  local_action: copy content={{ server_publickey.stdout }} dest=../projects/{{ projectname }}/server_pubkey
+  when: inventory_hostname == 'hop0'
+
+- name: Get Key 3
+  command: cat ~/client_privatekey
+  register: client_privatekey
+
+- name: Get Key 4
+  command: cat ~/client_publickey
+  register: client_publickey
+
+- name: Enable IP Forwarding
+  become: yes
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    sysctl_set: yes
+    state: present
+    reload: yes
+  register: forwarding
+
+# Setup user environment
+- name: Make sure we have a 'wheel' group
+  become: yes
+  group:
+    name: wheel
+    state: present
+
+- name: Create new user
+  become: yes
+  user:
+    name: "{{ username }}"
+    group: wheel
+    state: present
+    createhome: yes
+    shell: /bin/bash
+
+- name: Set authorized key
+  become: true
+  authorized_key:
+    user: "{{ username }}"
+    key: "{{ item }}"
+  with_file:
+    - ../projects/{{ projectname }}/id_rsa.pub
+
+- name: Allow 'wheel' group to have passwordless sudo
+  become: yes
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: "^%wheel"
+    line: "%wheel ALL=(ALL) NOPASSWD: ALL"
+    validate: "visudo -cf %s"
+
+# Harden SSH
+- name: Disable empty password login
+  become: yes
+  lineinfile: dest={{ sshd_config }} regexp="^#?PermitEmptyPasswords" line="PermitEmptyPasswords no"
+
+- name: Disable remote root login
+  become: yes
+  lineinfile: dest={{ sshd_config }} regexp="^#?PermitRootLogin" line="PermitRootLogin no"
+
+- name: Disable password login
+  become: yes
+  lineinfile: dest={{ sshd_config }} regexp="^(#\s*)?PasswordAuthentication " line="PasswordAuthentication no"
+  notify: "restart ssh"
+
+- name: Setup Hop 2
+  include_tasks: hop2.yml
+  when: inventory_hostname == 'hop2'
+
+- name: Setup Hop 1
+  include_tasks: hop1.yml
+  when: inventory_hostname == 'hop1'
+
+- name: Setup Hop 0
+  include_tasks: hop0.yml
+  when: inventory_hostname == 'hop0'

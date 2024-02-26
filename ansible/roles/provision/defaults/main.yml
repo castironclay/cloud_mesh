@@ -1,0 +1,3 @@
+---
+# Where is ssh config is located at
+sshd_config: /etc/ssh/sshd_config

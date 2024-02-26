@@ -1,0 +1,7 @@
+terraform {
+  backend "s3" {
+    bucket = "{{ bucket_name.stdout }}"
+    key    = "{{ projectname }}/terraform.tfstate"
+    region = "us-east-1"
+  }
+}

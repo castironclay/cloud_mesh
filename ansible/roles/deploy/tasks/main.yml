@@ -1,0 +1,113 @@
+---
+- name: Create stats file
+  template:
+    src: stats.yml
+    dest: "{{ project_path }}/stats.yml"
+
+- name: Update stats.yml
+  local_action:
+    module: lineinfile
+    path: "{{ project_path }}/stats.yml"
+    line: 'username: "{{ rand_username }}"'
+
+- name: Update stats.yml
+  local_action:
+    module: lineinfile
+    path: "{{ project_path }}/stats.yml"
+    line: 'project_id: "{{ project_id }}"'
+
+- name: Update stats with hop1 port
+  lineinfile:
+    path: "{{ project_path }}/stats.yml"
+    line: "hop0_port: {{ hop1_port }}"
+
+- name: Update stats with hop2 port
+  lineinfile:
+    path: "{{ project_path }}/stats.yml"
+    line: "hop1_port: {{ hop2_port }}"
+
+- name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
+  community.crypto.openssh_keypair:
+    path: "/{{ project_path }}/id_ssh_rsa"
+
+- name: Copy vars.tf
+  template:
+    src: vars.tf.tmpl
+    dest: "{{ project_path }}/vars.tf"
+
+# Update fact prior to template
+- set_fact:
+    hop_name: "{{ hop1_name }}"
+
+- name: Copy main.tf 1
+  template:
+    src: "{{ provider1 }}.tf.tmpl"
+    dest: "{{ project_path }}/{{ provider1 }}_hop1.tf"
+
+# Update fact prior to template
+- set_fact:
+    hop_name: "{{ hop2_name }}"
+
+- name: Copy main.tf 2
+  template:
+    src: "{{ provider2 }}.tf.tmpl"
+    dest: "{{ project_path }}/{{ provider2 }}_hop2.tf"
+
+- name: Move vars file 1
+  template:
+    src: "{{ provider1 }}/vars.tf.tmpl"
+    dest: "{{ project_path}}/{{ provider1 }}_hop1/vars.tf"
+
+- name: Set name
+  replace:
+    path: "{{ project_path}}/{{ provider1 }}_hop1/vars.tf"
+    regexp: "namenamenamename"
+    replace: "{{ project_path }}1"
+
+- name: Set wireguard port
+  replace:
+    path: "{{ project_path}}/{{ provider1 }}_hop1/vars.tf"
+    regexp: "wireguardport"
+    replace: "{{ hop0_port }}"
+
+- name: Move vars file 2
+  template:
+    src: "{{ provider2 }}/vars.tf.tmpl"
+    dest: "{{ project_path }}/{{ provider2 }}_hop2/vars.tf"
+
+- name: Set name
+  replace:
+    path: "{{ project_path}}/{{ provider2 }}_hop2/vars.tf"
+    regexp: "namenamenamename"
+    replace: "{{ project_path }}"
+
+- name: Set wireguard port
+  replace:
+    path: "{{ project_path}}/{{ provider2 }}_hop2/vars.tf"
+    regexp: "wireguardport"
+    replace: "{{ hop1_port }}"
+
+- name: Create main.tf
+  template:
+    src: main.tf.tmpl
+    dest: "{{ project_path }}/main.tf"
+
+- name: Deploy resources 
+  terraform:
+    project_path: "{{ project_path }}"
+    force_init: true
+    state: present
+  register: deployment
+
+- name: Host 1
+  include_tasks: host1.yml
+
+- name: Host 2
+  include_tasks: host2.yml
+
+- name: Host 3
+  include_tasks: host3.yml
+
+- name: Sleep for 1
+  wait_for:
+    timeout: 1

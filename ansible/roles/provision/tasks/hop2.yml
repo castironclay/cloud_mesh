@@ -1,0 +1,109 @@
+---
+- name: Set Server Conf File Tunnel 1
+  become: true
+  template:
+    src: templates/wg1.conf
+    dest: /etc/wireguard/wg1.conf
+  with_items: "{{ hop2_host }}"
+  tags: redeploy
+
+- name: Setup WG1 Namespace
+  become: true
+  shell: |
+    ip netns add wireguard
+    ip link add wg1 type wireguard
+    ip link set netns wireguard dev wg1
+    ip -n wireguard addr add 10.1.1.1/24 dev wg1
+    ip netns exec wireguard wg setconf wg1 /etc/wireguard/wg1.conf
+    ip -n wireguard link set wg1 up
+    ip link add tap1 type veth peer name tap2
+    ip link set tap2 netns wireguard
+    ifconfig tap1 10.0.0.1/30 up
+    ip netns exec wireguard ifconfig tap2 10.0.0.2/30 up
+    echo 1 > /proc/sys/net/ipv4/conf/tap1/proxy_arp
+    iptables -I FORWARD -i eth0 -d 10.0.0.0/30 -j ACCEPT
+    iptables -I FORWARD -o eth0 -s 10.0.0.0/30 -j ACCEPT
+    ip -n wireguard route add default dev tap2
+    ip netns exec wireguard iptables -t nat -I POSTROUTING -o tap2 -j MASQUERADE
+    iptables -t nat -I POSTROUTING -s 10.0.0.0/30 -j MASQUERADE
+  tags: redeploy
+
+- name: Update DNS
+  become: true
+  shell: echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+  tags: redeploy
+
+- name: Install Unbound
+  become: true
+  apt:
+    name:
+      - unbound
+      - unbound-host
+  tags: redeploy
+
+- name: Copy Unbound Config File
+  become: true
+  template:
+    src: templates/unbound.conf
+    dest: /etc/unbound/unbound.conf
+  tags: redeploy
+
+- name: Stop Systemd-Resolved
+  become: true
+  systemd:
+    name: systemd-resolved
+    state: stopped
+  tags: redeploy
+
+- name: Disable Systemd-Resolved
+  become: true
+  systemd:
+    name: systemd-resolved
+    enabled: no
+    masked: yes
+  tags: redeploy
+
+- name: Enable Unbound
+  become: true
+  systemd:
+    name: unbound
+    enabled: yes
+    masked: no
+  tags: redeploy
+
+- name: Grab DNS file
+  become: true
+  shell: curl -o /var/lib/unbound/root.hints https://www.internic.net/domain/named.cache
+  tags: redeploy
+
+- name: Start Unbound
+  become: true
+  systemd:
+    name: unbound
+    state: restarted
+  tags: redeploy
+
+- name: Enable Unbound-resolvconf
+  become: true
+  systemd:
+    name: unbound-resolvconf
+    enabled: yes
+    masked: no
+  tags: redeploy
+
+- name: Start Unbound-Resolvconf
+  become: true
+  systemd:
+    name: unbound-resolvconf
+    state: restarted
+  tags: redeploy
+
+- name: Chown unbound directory
+  become: true
+  file:
+    path: /var/lib/unbound
+    state: directory
+    recurse: yes
+    owner: unbound
+    group: unbound
+  tags: redeploy

@@ -1,0 +1,50 @@
+- hosts: localhost
+  tasks:
+    - name: Set project path
+      ansible.builtin.stat:
+        path: /skyhook/projects/{{ projectname }}
+      register: proj_stat
+
+    - name: Set storage path
+      ansible.builtin.stat:
+        path: /skyhook/decommissioned
+      register: decom_dir
+
+    # Fail condition
+    - ansible.builtin.fail:
+        msg: "Project does not exist"
+      when: proj_stat.stat.isdir is not defined
+
+    - name: Create decom directory if needed
+      ansible.builtin.file:
+        path: /skyhook/decommissioned
+        state: directory
+      when: decom_dir.stat.isdir is not defined
+
+    - name: Backup infrastructure
+      ansible.builtin.archive:
+        path: /skyhook/projects/{{ projectname }}
+        dest: /skyhook/decommissioned/{{ projectname }}.tgz
+      tags: backup
+
+    - name: Get backend bucket name
+      ansible.builtin.script: /usr/bin/python3 /skyhook/backend_bucket_name.py
+      register: bucket_name
+
+    - name: S3 upload backup file
+      ansible.builtin.shell:
+        cmd: /usr/bin/python3 /skyhook/s3_upload.py {{ projectname }}.tgz {{ bucket_name.stdout }} {{ projectname }}
+        chdir: "/skyhook/decommissioned/"
+
+    - name: Destroy instances
+      terraform:
+        project_path: /skyhook/projects/{{ projectname }}
+        state: absent
+
+    - name: Update database
+      ansible.builtin.shell: /usr/bin/python3 /skyhook/dynamo-decom.py /skyhook/projects/{{ projectname }}/stats.yml
+
+    - name: Remove directory
+      ansible.builtin.file:
+        path: /skyhook/projects/{{ projectname }}
+        state: absent

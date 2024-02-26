@@ -1,0 +1,15 @@
+---
+azure:
+  - username: debian
+
+aws:
+  - username: admin
+
+gcp:
+  - username: admin
+
+digitalocean:
+  - username: root
+
+linode:
+  - username: root

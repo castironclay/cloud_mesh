@@ -1,0 +1,44 @@
+- name: Update stats.yml
+  lineinfile:
+    path: /skyhook/projects/{{ projectname }}/stats.yml
+    line: "hop1_ip: {{ deployment.outputs.hop2_public_ip.value }}"
+
+- name: Add host
+  add_host:
+    name: hop1
+    ansible_host: "{{ deployment.outputs.hop2_public_ip.value }}"
+    groups: "{{ provider2 }}_hop2"
+    ansible_ssh_private_key_file: "/skyhook/projects/{{ projectname }}/id_rsa"
+    ansible_user: debian
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+    ansible_python_interpreter: /usr/bin/python3
+  when: provider2 == "azure"
+  tags: redeploy
+
+- name: Add host
+  add_host:
+    name: hop1
+    ansible_host: "{{ deployment.outputs.hop2_public_ip.value }}"
+    groups: "{{ provider2 }}_hop2"
+    ansible_ssh_private_key_file: "/skyhook/projects/{{ projectname }}/id_rsa"
+    ansible_user: admin
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+    ansible_python_interpreter: /usr/bin/python3
+  when: ( provider2 == "aws" or provider2 == "gcp" )
+  tags: redeploy
+
+- name: Add host
+  add_host:
+    name: hop1
+    ansible_host: "{{ deployment.outputs.hop2_public_ip.value }}"
+    groups: "{{ provider2 }}_hop2"
+    ansible_ssh_private_key_file: "/skyhook/projects/{{ projectname }}/id_rsa"
+    ansible_user: root
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+    ansible_python_interpreter: /usr/bin/python3
+  when: ( provider2 == "linode" or provider2 == "digitalocean" )
+
+- name: Sleep for 3
+  wait_for:
+    timeout: 3
+  tags: redeploy

@@ -1,0 +1,77 @@
+---
+- name: Modify
+  hosts: localhost
+  tasks:
+    - name: Get deployment info from Dynamodb
+      ansible.builtin.shell: "python3 /skyhook/get_dynamo.py {{ projectname }} | jq -r .Item"
+      register: json
+
+    - name: Convert output to proper json
+      ansible.builtin.set_fact:
+        jsondata: "{{ json.stdout | from_json }}"
+
+    - name: Set hop0 IP
+      ansible.builtin.set_fact:
+        hop0_ip: "{{ jsondata | json_query(jmesquery) }}"
+      vars:
+        jmesquery: 'hop0_ip'
+
+    - name: Set hop1 IP
+      ansible.builtin.set_fact:
+        hop1_ip: "{{ jsondata | json_query(jmesquery) }}"
+      vars:
+        jmesquery: 'hop1_ip'
+
+    - name: Set hop2 IP
+      ansible.builtin.set_fact:
+        hop2_ip: "{{ jsondata | json_query(jmesquery) }}"
+      vars:
+        jmesquery: 'hop2_ip'
+
+    - name: Set username
+      ansible.builtin.set_fact:
+        username: "{{ jsondata | json_query(jmesquery) }}"
+      vars:
+        jmesquery: 'username'
+
+    - name: Set projectname
+      ansible.builtin.set_fact:
+        projectname: "{{ jsondata | json_query(jmesquery) }}"
+      vars:
+        jmesquery: 'projectname'
+
+    - name: Add hop0 host
+      add_host:
+        name: hop0
+        ansible_host: "{{ hop0_ip }}"
+        groups: "modify"
+        ansible_ssh_private_key_file: "/skyhook/projects/{{ projectname }}/id_rsa"
+        ansible_user: "{{ username }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+        ansible_python_interpreter: /usr/bin/python3
+
+    - name: Add hop1 host
+      add_host:
+        name: hop1
+        ansible_host: "{{ hop1_ip }}"
+        groups: "modify"
+        ansible_ssh_private_key_file: "/skyhook/projects/{{ projectname }}/id_rsa"
+        ansible_user: "{{ username }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+        ansible_python_interpreter: /usr/bin/python3
+
+    - name: Add hop2 host
+      add_host:
+        name: hop2
+        ansible_host: "{{ hop2_ip }}"
+        groups: "modify"
+        ansible_ssh_private_key_file: "/skyhook/projects/{{ projectname }}/id_rsa"
+        ansible_user: "{{ username }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+        ansible_python_interpreter: /usr/bin/python3
+
+- name: Modify
+  hosts: modify
+  tasks:
+    - name: Update tasks
+      ansible.builtin.include_tasks: playbooks/update.yml
