@@ -1,10 +1,3 @@
-provider "azurerm" {
-  tenant_id       = var.AZ_TENANT
-  client_secret   = var.AZ_SECRET
-  subscription_id = var.AZ_SUB_ID
-  client_id       = var.AZ_APP_ID
-  features {}
-}
 
 resource "azurerm_resource_group" "resource_group" {
   location = var.location
@@ -84,7 +77,7 @@ resource "azurerm_virtual_machine" "host1" {
     connection {
       type        = "ssh"
       user        = var.username
-      private_key = file("./id_rsa")
+      private_key = file("./id_ssh_rsa")
       host        = azurerm_public_ip.public_ip.ip_address
     }
   }
@@ -105,7 +98,7 @@ resource "azurerm_virtual_machine" "host1" {
     disable_password_authentication = true
     ssh_keys {
       path     = "/home/${var.username}/.ssh/authorized_keys"
-      key_data = chomp(file("./id_rsa.pub"))
+      key_data = chomp(file("./id_ssh_rsa.pub"))
     }
   }
 }

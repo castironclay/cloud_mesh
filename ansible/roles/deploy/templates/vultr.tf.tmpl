@@ -1,6 +1,6 @@
 module "{{ hop_name }}" {
   source       = "./modules/{{ hop_name }}"
-  LINODE_TOKEN = var.LINODE_TOKEN
+  VULTR_TOKEN = var.VULTR_TOKEN
 }
 
 {% if 'hop1' in hop_name %}

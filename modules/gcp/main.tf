@@ -1,6 +1,3 @@
-provider "google" {
-  project = var.GOOGLE_PROJECT
-}
 
 data "google_compute_image" "ubuntu_image" {
   family  = "debian-11"
@@ -27,12 +24,12 @@ resource "google_compute_instance" "host" {
     connection {
       type        = "ssh"
       user        = var.gce_user
-      private_key = file("./id_rsa")
+      private_key = file("./id_ssh_rsa")
       host        = google_compute_instance.host.network_interface.0.access_config.0.nat_ip
     }
   }
   metadata = {
-    ssh-keys = "${var.gce_user}:${file("./id_rsa.pub")}"
+    ssh-keys = "${var.gce_user}:${file("./id_ssh_rsa.pub")}"
   }
 }
 

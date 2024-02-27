@@ -1,6 +1,3 @@
-provider "aws" {
-  region = var.region
-}
 
 resource "aws_instance" "host" {
   vpc_security_group_ids      = [aws_security_group.instance_sg.id]
@@ -23,14 +20,14 @@ resource "aws_instance" "host" {
     connection {
       type        = "ssh"
       user        = "admin"
-      private_key = file("./id_rsa")
+      private_key = file("./id_ssh_rsa")
       host        = aws_instance.host.public_ip
     }
   }
 }
 resource "aws_key_pair" "host_key" { # aws_key_pair resource
   key_name   = var.name
-  public_key = file("./id_rsa.pub")
+  public_key = file("./id_ssh_rsa.pub")
 }
 resource "aws_vpc" "aws_vpc" {
   cidr_block = var.vpc_cidr
