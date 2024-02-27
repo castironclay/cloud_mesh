@@ -10,6 +10,8 @@ from jinja2 import Environment, FileSystemLoader
 from loguru import logger
 from rich import print as rprint
 
+from creds_setup import generate_vars_file
+
 environment = Environment(
     loader=FileSystemLoader(f"{os.path.dirname(os.path.abspath(__file__))}/templates/")
 )
@@ -42,12 +44,8 @@ def make_op_path(base_path: str) -> UUID:
     op_name = uuid4()
     directory_path = Path(f"{base_path}/{op_name}")
 
-    # Make the directory by calling mkdir() on the path instance
     logger.info(f"Creating path: {directory_path}")
     directory_path.mkdir()
-
-    # logger.info(f"Deleting path: {directory_path}")
-    # directory_path.rmdir()
 
     return op_name
 
@@ -87,15 +85,7 @@ def setup_terraform(
     chain_id = make_op_path(base_path)
     dest_directory = f"{base_path}/{chain_id}/modules"
     copy_specific_modules(script_path, dest_directory, select_two)
-
-    # Create required Terraform vars files for account credentials
-    for module in select_two:
-        template = environment.get_template(f"{module}_vars.tf")
-        content = template.render(hop_name=provider)
-        with open(
-            f"{base_path}/{chain_id}/{provider}.tf", mode="w", encoding="utf-8"
-        ) as message:
-            message.write(content)
+    generate_vars_file(creds, select_two, base_path, chain_id)
 
     project_path = f"{base_path}/{chain_id}"
     return project_path, select_two, chain_id
