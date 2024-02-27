@@ -11,16 +11,27 @@ def generate_vars_file(
     creds: dict, providers: list, base_path: str, chain_id: str
 ) -> None:
     """
-    Build the vars.tf file for the project by rendering and combining
-    the variables for both providers.
+    Build the vars.tf file for the project by rendering and combining the variables for both providers.
+    Dedup to ensure we aren't writing the same variable names twice and causing a Terraform error.
     """
-    with open(f"{base_path}/{chain_id}/vars.tf", mode="w", encoding="utf-8") as message:
-        for index, provider in enumerate(providers):
-            index += 1
-            # Execute function based on value of 'provider' in loop
-            content = globals()[provider](creds)
+    if len(set(providers)) == 1:
+        # Both values are the same, only execute the function once
+        provider = providers[0]
+        content = globals()[provider](creds)
+
+        with open(
+            f"{base_path}/{chain_id}/vars.tf", mode="w", encoding="utf-8"
+        ) as message:
             message.write(content)
-            message.write("\n")
+
+    else:
+        with open(
+            f"{base_path}/{chain_id}/vars.tf", mode="w", encoding="utf-8"
+        ) as message:
+            for provider in providers:
+                content = globals()[provider](creds)
+                message.write(content)
+                message.write("\n")
 
 
 def azure(creds: dict) -> str:
