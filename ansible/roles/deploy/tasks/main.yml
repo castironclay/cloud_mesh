@@ -14,6 +14,12 @@
   local_action:
     module: lineinfile
     path: "{{ project_path }}/stats.yml"
+    line: 'cloud_resource_name: "{{ cloudname }}"'
+
+- name: Update stats.yml
+  local_action:
+    module: lineinfile
+    path: "{{ project_path }}/stats.yml"
     line: 'project_id: "{{ project_id }}"'
 
 - name: Update stats with hop1 port
@@ -50,14 +56,14 @@
 
 - name: Move vars file 1
   template:
-    src: "{{ provider1 }}/vars.tf.tmpl"
+    src: "{{ provider1 }}/vars.tf"
     dest: "{{ project_path}}/modules/hop1_{{ provider1 }}/vars.tf"
 
 - name: Set name
   replace:
     path: "{{ project_path}}/modules/hop1_{{ provider1 }}/vars.tf"
     regexp: "namenamenamename"
-    replace: "{{ project_path }}1"
+    replace: "{{ cloudname }}"
 
 - name: Set wireguard port
   replace:
@@ -67,14 +73,14 @@
 
 - name: Move vars file 2
   template:
-    src: "{{ provider2 }}/vars.tf.tmpl"
+    src: "{{ provider2 }}/vars.tf"
     dest: "{{ project_path }}/modules/hop2_{{ provider2 }}/vars.tf"
 
 - name: Set name
   replace:
     path: "{{ project_path}}/modules/hop2_{{ provider2 }}/vars.tf"
     regexp: "namenamenamename"
-    replace: "{{ project_path }}"
+    replace: "{{ cloudname }}"
 
 - name: Set wireguard port
   replace:

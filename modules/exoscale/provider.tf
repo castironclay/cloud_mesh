@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "exoscale" {
-  key    = var.EXOSCALE_KEY
+  key    = var.EXOSCALE_ACCESS
   secret = var.EXOSCALE_SECRET
 }
 

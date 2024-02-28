@@ -1,6 +1,7 @@
 module "{{ hop_name }}" {
   source       = "./modules/{{ hop_name }}"
-  LINODE_TOKEN = var.LINODE_TOKEN
+  EXOSCALE_ACCESS = var.EXOSCALE_ACCESS
+  EXOSCALE_SECRET = var.EXOSCALE_SECRET
 }
 
 {% if 'hop1' in hop_name %}
