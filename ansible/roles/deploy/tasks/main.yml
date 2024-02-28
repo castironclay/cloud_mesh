@@ -63,7 +63,7 @@
   replace:
     path: "{{ project_path}}/modules/hop1_{{ provider1 }}/vars.tf"
     regexp: "namenamenamename"
-    replace: "{{ cloudname }}"
+    replace: "{{ cloudname }}1"
 
 - name: Set wireguard port
   replace:
@@ -80,7 +80,7 @@
   replace:
     path: "{{ project_path}}/modules/hop2_{{ provider2 }}/vars.tf"
     regexp: "namenamenamename"
-    replace: "{{ cloudname }}"
+    replace: "{{ cloudname }}2"
 
 - name: Set wireguard port
   replace:

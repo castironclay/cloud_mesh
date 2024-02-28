@@ -1,4 +1,5 @@
 variable "VULTR_TOKEN" {}
 variable "name" {
-  type = string
+  type    = string
+  default = "namenamenamename"
 }
