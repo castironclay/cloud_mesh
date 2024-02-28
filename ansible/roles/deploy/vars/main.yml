@@ -13,3 +13,6 @@ digitalocean:
 
 linode:
   - username: root
+
+exoscale:
+  - username: admin
