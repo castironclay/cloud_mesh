@@ -11,6 +11,16 @@ resource "exoscale_compute_instance" "my_instance" {
   type        = "standard.medium"
   disk_size   = 10
   ssh_key     = exoscale_ssh_key.my_ssh_key.name
+  provisioner "remote-exec" {
+    inline = ["echo 'Im alive!'"]
+
+    connection {
+      type        = "ssh"
+      user        = "admin"
+      private_key = file("./id_ssh_rsa")
+      host        = exoscale_compute_instance.my_instance.public_ip_address
+    }
+  }
 
 }
 

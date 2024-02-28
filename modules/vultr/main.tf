@@ -8,6 +8,16 @@ resource "vultr_instance" "my_instance" {
   ddos_protection   = false
   ssh_key_ids       = [vultr_ssh_key.my_ssh_key.id]
   firewall_group_id = vultr_firewall_group.my_firewallgroup.id
+  provisioner "remote-exec" {
+    inline = ["echo 'Im alive!'"]
+
+    connection {
+      type        = "ssh"
+      user        = "root"
+      private_key = file("./id_ssh_rsa")
+      host        = vultr_instance.my_instance.main_ip
+    }
+  }
 }
 resource "vultr_ssh_key" "my_ssh_key" {
   name    = var.name
