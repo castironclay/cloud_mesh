@@ -15,4 +15,4 @@ linode:
   - username: root
 
 exoscale:
-  - username: admin
+  - username: root
