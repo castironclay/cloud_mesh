@@ -7,10 +7,11 @@ resource "exoscale_compute_instance" "my_instance" {
   zone = "ch-gva-2"
   name = var.name
 
-  template_id = data.exoscale_template.my_template.id
-  type        = "standard.medium"
-  disk_size   = 10
-  ssh_key     = exoscale_ssh_key.my_ssh_key.name
+  template_id        = data.exoscale_template.my_template.id
+  type               = "standard.medium"
+  disk_size          = 10
+  ssh_key            = exoscale_ssh_key.my_ssh_key.name
+  security_group_ids = [exoscale_security_group.my_security_group.id]
   provisioner "remote-exec" {
     inline = ["echo 'Im alive!'"]
 
@@ -35,6 +36,7 @@ resource "exoscale_security_group_rule" "my_security_group_rule" {
   cidr              = "0.0.0.0/0"
   start_port        = 22
   end_port          = 22
+  depends_on        = [exoscale_security_group.my_security_group]
 }
 
 resource "exoscale_ssh_key" "my_ssh_key" {
