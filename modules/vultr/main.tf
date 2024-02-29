@@ -4,7 +4,7 @@ resource "vultr_instance" "my_instance" {
   os_id             = "477" # Debian 11
   backups           = "disabled"
   hostname          = var.name
-  label             = [var.name]
+  label             = var.name
   activation_email  = false
   ddos_protection   = false
   ssh_key_ids       = [vultr_ssh_key.my_ssh_key.id]
