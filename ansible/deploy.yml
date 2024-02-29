@@ -35,3 +35,8 @@
     hop2_name: "hop2_{{ provider2 }}"
     project_path: "{{ project_path }}"
     project_id: "{{ project_id }}"
+
+- hosts: all
+  tasks:
+    - name: Include vars from stats.yml
+      ansible.builtin.ping:
