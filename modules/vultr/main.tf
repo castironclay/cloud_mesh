@@ -4,6 +4,7 @@ resource "vultr_instance" "my_instance" {
   os_id             = "477" # Debian 11
   backups           = "disabled"
   hostname          = var.name
+  label             = [var.name]
   activation_email  = false
   ddos_protection   = false
   ssh_key_ids       = [vultr_ssh_key.my_ssh_key.id]
@@ -18,6 +19,7 @@ resource "vultr_instance" "my_instance" {
       host        = vultr_instance.my_instance.main_ip
     }
   }
+  depends_on = [vultr_ssh_key.my_ssh_key, vultr_firewall_group.my_firewallgroup]
 }
 resource "vultr_ssh_key" "my_ssh_key" {
   name    = var.name
@@ -36,4 +38,5 @@ resource "vultr_firewall_rule" "my_firewallrule" {
   subnet_size       = 0
   port              = "22"
   notes             = "Allow SSH"
+  depends_on        = [vultr_firewall_group.my_firewallgroup]
 }
