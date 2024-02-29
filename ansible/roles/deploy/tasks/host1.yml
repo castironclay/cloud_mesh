@@ -1,12 +1,12 @@
 - name: Ansible fact - ansible_date_time.iso8601
   lineinfile:
-    path: /skyhook/projects/{{ projectname }}/stats.yml
+    path: "{{ project_path }}/stats.yml"
     line: "build_date: {{ ansible_date_time.iso8601 }}"
   tags: redeploy
 
 - name: Update stats.yml
   lineinfile:
-    path: /skyhook/projects/{{ projectname }}/stats.yml
+    path: "{{ project_path }}/stats.yml"
     line: "hop0_ip: {{ deployment.outputs.hop1_public_ip.value }}"
 
 # Use correct username based on provider
@@ -16,7 +16,7 @@
     name: hop0
     ansible_host: "{{ deployment.outputs.hop1_public_ip.value }}"
     groups: "{{ provider1 }}_hop1"
-    ansible_ssh_private_key_file: "/skyhook/projects/{{ projectname }}/id_rsa"
+    ansible_ssh_private_key_file: "/skyhook/projects/{{ projectname }}/id_ssh_rsa"
     ansible_user: debian
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
     ansible_python_interpreter: /usr/bin/python3
@@ -28,7 +28,7 @@
     name: hop0
     ansible_host: "{{ deployment.outputs.hop1_public_ip.value }}"
     groups: "{{ provider1 }}_hop1"
-    ansible_ssh_private_key_file: "/skyhook/projects/{{ projectname }}/id_rsa"
+    ansible_ssh_private_key_file: "/skyhook/projects/{{ projectname }}/id_ssh_rsa"
     ansible_user: admin
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
     ansible_python_interpreter: /usr/bin/python3
@@ -40,7 +40,7 @@
     name: hop0
     ansible_host: "{{ deployment.outputs.hop1_public_ip.value }}"
     groups: "{{ provider1 }}_hop1"
-    ansible_ssh_private_key_file: "/skyhook/projects/{{ projectname }}/id_rsa"
+    ansible_ssh_private_key_file: "/skyhook/projects/{{ projectname }}/id_ssh_rsa"
     ansible_user: root
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
     ansible_python_interpreter: /usr/bin/python3

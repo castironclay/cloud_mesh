@@ -16,7 +16,7 @@ resource "exoscale_compute_instance" "my_instance" {
 
     connection {
       type        = "ssh"
-      user        = "admin"
+      user        = "root"
       private_key = file("./id_ssh_rsa")
       host        = exoscale_compute_instance.my_instance.public_ip_address
     }
