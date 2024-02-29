@@ -7,13 +7,13 @@
 - name: Update stats.yml
   lineinfile:
     path: "{{ project_path }}/stats.yml"
-    line: "hop0_ip: {{ deployment.outputs.hop1_public_ip.value }}"
+    line: "hop1_ip: {{ deployment.outputs.hop1_public_ip.value }}"
 
 # Use correct username based on provider
 # Might a better way of doing this
 - name: Add host
   add_host:
-    name: hop0
+    name: hop1
     ansible_host: "{{ deployment.outputs.hop1_public_ip.value }}"
     groups: "{{ provider1 }}_hop1"
     ansible_ssh_private_key_file: "{{ project_path }}/id_ssh_rsa"
@@ -25,7 +25,7 @@
 
 - name: Add host
   add_host:
-    name: hop0
+    name: hop1
     ansible_host: "{{ deployment.outputs.hop1_public_ip.value }}"
     groups: "{{ provider1 }}_hop1"
     ansible_ssh_private_key_file: "{{ project_path }}/id_ssh_rsa"
@@ -37,7 +37,7 @@
 
 - name: Add host
   add_host:
-    name: hop0
+    name: hop1
     ansible_host: "{{ deployment.outputs.hop1_public_ip.value }}"
     groups: "{{ provider1 }}_hop1"
     ansible_ssh_private_key_file: "{{ project_path }}/id_ssh_rsa"

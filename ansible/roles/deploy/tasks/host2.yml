@@ -1,11 +1,11 @@
 - name: Update stats.yml
   lineinfile:
     path: "{{ project_path }}/stats.yml"
-    line: "hop1_ip: {{ deployment.outputs.hop2_public_ip.value }}"
+    line: "hop2_ip: {{ deployment.outputs.hop2_public_ip.value }}"
 
 - name: Add host
   add_host:
-    name: hop1
+    name: hop2
     ansible_host: "{{ deployment.outputs.hop2_public_ip.value }}"
     groups: "{{ provider2 }}_hop2"
     ansible_ssh_private_key_file: "{{ project_path }}/id_ssh_rsa"
@@ -13,11 +13,10 @@
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
     ansible_python_interpreter: /usr/bin/python3
   when: provider2 == "azure"
-  tags: redeploy
 
 - name: Add host
   add_host:
-    name: hop1
+    name: hop2
     ansible_host: "{{ deployment.outputs.hop2_public_ip.value }}"
     groups: "{{ provider2 }}_hop2"
     ansible_ssh_private_key_file: "{{ project_path }}/id_ssh_rsa"
@@ -25,20 +24,18 @@
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
     ansible_python_interpreter: /usr/bin/python3
   when: ( provider2 == "aws" or provider2 == "gcp" )
-  tags: redeploy
 
 - name: Add host
   add_host:
-    name: hop1
+    name: hop2
     ansible_host: "{{ deployment.outputs.hop2_public_ip.value }}"
     groups: "{{ provider2 }}_hop2"
     ansible_ssh_private_key_file: "{{ project_path }}/id_ssh_rsa"
     ansible_user: root
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
     ansible_python_interpreter: /usr/bin/python3
-  when: ( provider1 == "linode" or provider1 == "exoscale" or provider1 == "vultr" )
+  when: ( provider2 == "linode" or provider2 == "exoscale" or provider2 == "vultr" )
 
 - name: Sleep for 3
   wait_for:
     timeout: 3
-  tags: redeploy
