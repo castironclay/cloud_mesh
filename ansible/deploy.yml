@@ -38,5 +38,5 @@
 
 - hosts: all
   tasks:
-    - name: Include vars from stats.yml
+    - name: Ping all hosts
       ansible.builtin.ping:
