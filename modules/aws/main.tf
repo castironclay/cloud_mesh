@@ -70,9 +70,9 @@ resource "aws_security_group" "instance_sg" {
   depends_on = [aws_vpc.aws_vpc]
 }
 
-resource "aws_security_group_rule" "ingress_all" {
-  from_port         = 0
-  to_port           = 0
+resource "aws_security_group_rule" "ingress_ssh" {
+  from_port         = 22
+  to_port           = 22
   protocol          = "-1"
   security_group_id = aws_security_group.instance_sg.id
   type              = "ingress"

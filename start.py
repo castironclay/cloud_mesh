@@ -10,7 +10,7 @@ from jinja2 import Environment, FileSystemLoader
 from loguru import logger
 from rich import print as rprint
 
-from creds_setup import generate_vars_file
+from vars_setup import generate_vars_file
 
 environment = Environment(
     loader=FileSystemLoader(f"{os.path.dirname(os.path.abspath(__file__))}/templates/")

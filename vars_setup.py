@@ -1,5 +1,5 @@
 import os
-
+from region_checks import check_aws
 from jinja2 import Environment, FileSystemLoader
 
 environment = Environment(
@@ -55,10 +55,12 @@ def aws(creds: dict) -> str:
     template = environment.get_template("aws_vars.tf")
     access_key = creds.get("aws").get("access_key")
     secret_key = creds.get("aws").get("secret_key")
+    region = check_aws(creds)
 
     content = template.render(
         AWS_ACCESS_KEY=access_key,
         AWS_SECRET_KEY=secret_key,
+        REGION=region
     )
 
     return content

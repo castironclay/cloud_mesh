@@ -2,6 +2,7 @@ module "{{ hop_name }}" {
   source = "./modules/{{ hop_name }}"
   AWS_ACCESS_KEY = var.AWS_ACCESS_KEY
   AWS_SECRET_KEY = var.AWS_SECRET_KEY
+  REGION = var.REGION
 }
 
 {% if 'hop1' in hop_name %}
