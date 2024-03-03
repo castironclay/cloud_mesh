@@ -1,6 +1,8 @@
 import os
-from region_checks import check_aws
+
 from jinja2 import Environment, FileSystemLoader
+
+from region_checks import check_aws
 
 environment = Environment(
     loader=FileSystemLoader(f"{os.path.dirname(os.path.abspath(__file__))}/templates/")
@@ -52,15 +54,23 @@ def azure(creds: dict) -> str:
 
 
 def aws(creds: dict) -> str:
-    template = environment.get_template("aws_vars.tf")
-    access_key = creds.get("aws").get("access_key")
-    secret_key = creds.get("aws").get("secret_key")
+    aws_creds = creds.get("aws")
+
+    if aws_creds is None:
+        raise ValueError("AWS credentials not found in creds dictionary")
+
+    access_key = aws_creds.get("access_key")
+    secret_key = aws_creds.get("secret_key")
+
+    if access_key is None or secret_key is None:
+        raise ValueError("AWS access key or secret key not found in creds dictionary")
+
     region = check_aws(creds)
 
+    template = environment.get_template("aws_vars.tf")
+
     content = template.render(
-        AWS_ACCESS_KEY=access_key,
-        AWS_SECRET_KEY=secret_key,
-        REGION=region
+        AWS_ACCESS_KEY=access_key, AWS_SECRET_KEY=secret_key, REGION=region
     )
 
     return content
