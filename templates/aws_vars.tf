@@ -6,7 +6,7 @@ variable "AWS_SECRET_KEY" {
   type    = string
   default = "{{ AWS_SECRET_KEY }}"
 }
-variable "REGION" {
+variable "aws_region" {
   type    = string
   default = "{{ REGION }}"
 }

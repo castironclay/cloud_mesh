@@ -36,23 +36,6 @@ def generate_vars_file(
                 message.write("\n")
 
 
-def azure(creds: dict) -> str:
-    template = environment.get_template("azure_vars.tf")
-    app_client_id = creds.get("azure").get("app_client_id")
-    tenant = creds.get("azure").get("tenant")
-    secret = creds.get("azure").get("secret")
-    sub_id = creds.get("azure").get("sub_id")
-
-    content = template.render(
-        AZURE_APP_CLIENT_ID=app_client_id,
-        AZURE_TENANT_ID=tenant,
-        AZURE_SECRET=secret,
-        AZURE_SUB_ID=sub_id,
-    )
-
-    return content
-
-
 def aws(creds: dict) -> str:
     aws_creds = creds.get("aws")
 
@@ -76,6 +59,24 @@ def aws(creds: dict) -> str:
     return content
 
 
+def digitalocean(creds: dict) -> str:
+    do_creds = creds.get("digitalocean")
+
+    if do_creds is None:
+        raise ValueError("Digitalocean credentials not found in creds dictionary")
+
+    do_key = do_creds.get("key")
+
+    if do_key is None:
+        raise ValueError("Digitalocean key not found in creds dictionary")
+
+    template = environment.get_template("digitalocean_vars.tf")
+
+    content = template.render(
+        DO_TOKEN=do_key,
+    )
+
+    return content
 def linode(creds: dict) -> str:
     template = environment.get_template("linode_vars.tf")
     key = creds.get("linode").get("key")

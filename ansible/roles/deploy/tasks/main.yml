@@ -32,9 +32,13 @@
     path: "{{ project_path }}/stats.yml"
     line: "hop2_port: {{ hop2_port }}"
 
-- name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
+- name: Generate hop1 OpenSSH keypair (4096 bits, rsa)
   community.crypto.openssh_keypair:
-    path: "/{{ project_path }}/id_ssh_rsa"
+    path: "/{{ project_path }}/id_ssh_rsa1"
+
+- name: Generate hop2 OpenSSH keypair (4096 bits, rsa)
+  community.crypto.openssh_keypair:
+    path: "/{{ project_path }}/id_ssh_rsa2"
 
 # Update fact prior to template
 - set_fact:
@@ -59,11 +63,23 @@
     src: "{{ provider1 }}/vars.tf"
     dest: "{{ project_path}}/modules/hop1_{{ provider1 }}/vars.tf"
 
-- name: Set name
+- name: Set name for resources
   replace:
     path: "{{ project_path}}/modules/hop1_{{ provider1 }}/vars.tf"
     regexp: "namenamenamename"
     replace: "{{ cloudname }}1"
+
+- name: Set private key
+  replace:
+    path: "{{ project_path}}/modules/hop1_{{ provider1 }}/vars.tf"
+    regexp: "prikey"
+    replace: "id_ssh_rsa1"
+
+- name: Set public key
+  replace:
+    path: "{{ project_path}}/modules/hop1_{{ provider1 }}/vars.tf"
+    regexp: "pubkey"
+    replace: "id_ssh_rsa1.pub"
 
 - name: Set wireguard port
   replace:
@@ -76,11 +92,23 @@
     src: "{{ provider2 }}/vars.tf"
     dest: "{{ project_path }}/modules/hop2_{{ provider2 }}/vars.tf"
 
-- name: Set name
+- name: Set name for resources
   replace:
     path: "{{ project_path}}/modules/hop2_{{ provider2 }}/vars.tf"
     regexp: "namenamenamename"
     replace: "{{ cloudname }}2"
+
+- name: Set private key
+  replace:
+    path: "{{ project_path}}/modules/hop2_{{ provider2 }}/vars.tf"
+    regexp: "prikey"
+    replace: "id_ssh_rsa2"
+
+- name: Set public key
+  replace:
+    path: "{{ project_path}}/modules/hop2_{{ provider2 }}/vars.tf"
+    regexp: "pubkey"
+    replace: "id_ssh_rsa2.pub"
 
 - name: Set wireguard port
   replace:

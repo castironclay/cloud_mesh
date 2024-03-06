@@ -44,7 +44,7 @@
     ansible_user: root
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
     ansible_python_interpreter: /usr/bin/python3
-  when: ( provider1 == "linode" or provider1 == "exoscale" or provider1 == "vultr" )
+  when: ( provider1 == "linode" or provider1 == "exoscale" or provider1 == "vultr" or provider1 == "digitalocean" )
 
 - name: Sleep for 3
   wait_for:

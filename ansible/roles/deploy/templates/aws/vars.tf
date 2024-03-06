@@ -38,7 +38,7 @@ variable "ami" {
   type        = string
 }
 
-variable "region" {
+variable "aws_region" {
   default = "us-east-1"
   type    = string
 }
