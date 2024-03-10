@@ -1,10 +1,26 @@
+# Get all available regions
+data "digitalocean_regions" "available" {
+  filter {
+    key    = "available"
+    values = ["true"]
+  }
+}
+
+# Produce random number between 1 and the length of the available regions
+resource "random_integer" "region_number" {
+  depends_on = [data.digitalocean_regions.available]
+  min        = 1
+  max        = length(data.digitalocean_regions.available.regions)
+}
+
 resource "digitalocean_droplet" "droplet" {
   depends_on = [digitalocean_ssh_key.key]
   name       = var.name
   size       = "s-1vcpu-1gb"
   image      = "debian-12-x64"
-  region     = var.region
-  ssh_keys   = [digitalocean_ssh_key.key.fingerprint]
+  # Pick region from list of regions at random index and use region slug of proper value for region
+  region   = element(data.digitalocean_regions.available.regions, random_integer.region_number.result).slug
+  ssh_keys = [digitalocean_ssh_key.key.fingerprint]
 
   provisioner "remote-exec" {
     inline = ["echo 'Im alive!'"]
@@ -36,4 +52,5 @@ resource "digitalocean_firewall" "firewall" {
     source_addresses = ["0.0.0.0/0"]
   }
 }
+
 
