@@ -116,7 +116,22 @@
     regexp: "wireguardport"
     replace: "{{ hop2_port }}"
 
-- name: Deploy resources 
+- name: Deploy resources 1
+  terraform:
+    project_path: "{{ project_path }}"
+    force_init: true
+    state: present
+    targets: ["module.hop1_aws.random_shuffle.regions", "module.hop2_aws.random_shuffle.regions"]
+  when: provider1 == "aws"
+
+- name: Deploy resources 1
+  terraform:
+    project_path: "{{ project_path }}"
+    force_init: true
+    state: present
+  when: provider1 != "aws"
+
+- name: Deploy resources 2
   terraform:
     project_path: "{{ project_path }}"
     force_init: true

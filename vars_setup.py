@@ -2,8 +2,6 @@ import os
 
 from jinja2 import Environment, FileSystemLoader
 
-from region_checks import check_aws
-
 environment = Environment(
     loader=FileSystemLoader(f"{os.path.dirname(os.path.abspath(__file__))}/templates/")
 )
@@ -48,12 +46,10 @@ def aws(creds: dict) -> str:
     if access_key is None or secret_key is None:
         raise ValueError("AWS access key or secret key not found in creds dictionary")
 
-    region = check_aws(creds)
-
     template = environment.get_template("aws_vars.tf")
 
     content = template.render(
-        AWS_ACCESS_KEY=access_key, AWS_SECRET_KEY=secret_key, REGION=region
+        AWS_ACCESS_KEY=access_key, AWS_SECRET_KEY=secret_key
     )
 
     return content
