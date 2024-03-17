@@ -1,7 +1,3 @@
-variable "region" {
-  default = "nyc3"
-  type    = string
-}
 variable "name" {
   default = "namenamenamename"
   type    = string

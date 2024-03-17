@@ -1,9 +1,5 @@
-variable "linode_region" {
-  default = "us-central"
-}
-
 variable "linode_image" {
-  default = "linode/debian11"
+  default = "linode/debian12"
 }
 
 variable "linode_label" {
@@ -16,6 +12,16 @@ variable "linode_type" {
 
 variable "key_name" {
   default = "namenamenamename"
+}
+
+variable "private_keyname" {
+  default = "./prikey"
+  type    = string
+}
+
+variable "public_keyname" {
+  default = "./pubkey"
+  type    = string
 }
 
 variable "LINODE_TOKEN" {}
