@@ -1,6 +1,7 @@
 import os
 import random
 import shutil
+import string
 import subprocess
 from pathlib import Path
 from uuid import UUID, uuid4
@@ -16,6 +17,20 @@ from vars_setup import generate_vars_file
 environment = Environment(
     loader=FileSystemLoader(f"{os.path.dirname(os.path.abspath(__file__))}/templates/")
 )
+
+
+def random_values() -> tuple:
+    resource_name_lengths = [6, 7, 8, 9]
+    N = random.choices(resource_name_lengths)[0]
+    hop1_resource_name = "".join(random.choices(string.ascii_lowercase, k=N))
+
+    N = random.choices(resource_name_lengths)[0]
+    hop2_resource_name = "".join(random.choices(string.ascii_lowercase, k=N))
+
+    wg_port1 = random.randint(20000, 50000)
+    wg_port2 = random.randint(20000, 50000)
+
+    return hop1_resource_name, hop2_resource_name, wg_port1, wg_port2
 
 
 def read_creds_file(creds) -> dict:
@@ -67,7 +82,7 @@ def copy_specific_modules(
     shutil.copytree(src_folder_path, dest_folder_path)
 
     # Provider2
-    dest_folder_name = f"hop1" + "_" + provider2
+    dest_folder_name = f"hop2" + "_" + provider2
     src_folder_path = os.path.join(src_dir, provider2)
     dest_folder_path = os.path.join(dest_dir, dest_folder_name)
 
@@ -105,7 +120,9 @@ def setup_terraform(
 def ansible_deploy(
     script_path: str, project_path: str, provider1: str, provider2: str, chain_id: str
 ):
-    command = f"ansible-playbook {script_path}/ansible/deploy.yml -e project_path={project_path} -e provider1={provider1} -e provider2={provider2} -e project_id={chain_id}"
+    hop1_resource_name, hop2_resource_name, wg_port1, wg_port2 = random_values()
+    command = f"ansible-playbook {script_path}/ansible/deploy.yml -e project_path={project_path} -e provider1={provider1} -e provider2={provider2} -e project_id={chain_id} \
+                -e hop1_resource_name={hop1_resource_name} -e hop2_resource_name={hop2_resource_name} -e wg_port1={wg_port1} -e wg_port2={wg_port2}"
 
     process = subprocess.Popen(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True

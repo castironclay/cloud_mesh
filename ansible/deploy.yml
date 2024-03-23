@@ -1,40 +1,19 @@
 ---
 - hosts: localhost
-  pre_tasks:
-    - name: Create random port 1
-      set_fact:
-        hop1_port_random: "{{ (50000) | random(start=20000) }}"
-      run_once: true
-
-    - name: Create random port 2
-      set_fact:
-        hop2_port_random: "{{ (50000) | random(start=20000) }}"
-      run_once: true
-
-    - name: Generate username for hosts
-      set_fact:
-        rand_username: "{{ lookup('password', '/dev/null length=12 chars=ascii_letters')|lower }}"
-      run_once: true
-
-    - name: Generate name for cloud resources
-      set_fact:
-        rand_cloudname: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters')|lower }}"
-      run_once: true
-
   tasks:
     - name: Deploy role
       include_role:
         name: ./roles/deploy
 
   vars:
-    hop1_port: "{{ hop1_port_random }}"
-    hop2_port: "{{ hop2_port_random }}"
-    username: "{{ rand_username }}"
-    cloudname: "{{ rand_cloudname }}"
     hop1_name: "hop1_{{ provider1 }}"
     hop2_name: "hop2_{{ provider2 }}"
     project_path: "{{ project_path }}"
     project_id: "{{ project_id }}"
+    wg_port1: "{{ wg_port1 }}"
+    wg_port2: "{{ wg_port2 }}"
+    hop1_resource_name: "{{ hop1_resource_name }}"
+    hop2_resource_name: "{{ hop2_resource_name }}"
 
 - hosts: all
   tasks:

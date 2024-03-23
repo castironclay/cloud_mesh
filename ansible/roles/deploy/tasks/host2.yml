@@ -1,7 +1,7 @@
-- name: Update stats.yml
-  lineinfile:
-    path: "{{ project_path }}/stats.yml"
-    line: "hop2_ip: {{ deployment.outputs.hop2_public_ip.value }}"
+# - name: Update stats.yml
+#   lineinfile:
+#     path: "{{ project_path }}/stats.yml"
+#     line: "hop2_ip: {{ deployment.outputs.hop2_public_ip.value }}"
 
 - name: Add host
   add_host:
@@ -25,6 +25,6 @@
     ansible_python_interpreter: /usr/bin/python3
   when: ( provider2 == "linode" or provider2 == "exoscale" or provider2 == "vultr" or provider2 == "digitalocean" )
 
-- name: Sleep for 3
+- name: Sleep for 1
   wait_for:
-    timeout: 3
+    timeout: 1

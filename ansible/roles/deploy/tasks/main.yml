@@ -1,37 +1,4 @@
 ---
-- name: Create stats file
-  template:
-    src: stats.yml
-    dest: "{{ project_path }}/stats.yml"
-
-- name: Update stats.yml
-  local_action:
-    module: lineinfile
-    path: "{{ project_path }}/stats.yml"
-    line: 'username: "{{ rand_username }}"'
-
-- name: Update stats.yml
-  local_action:
-    module: lineinfile
-    path: "{{ project_path }}/stats.yml"
-    line: 'cloud_resource_name: "{{ cloudname }}"'
-
-- name: Update stats.yml
-  local_action:
-    module: lineinfile
-    path: "{{ project_path }}/stats.yml"
-    line: 'project_id: "{{ project_id }}"'
-
-- name: Update stats with hop1 port
-  lineinfile:
-    path: "{{ project_path }}/stats.yml"
-    line: "hop1_port: {{ hop1_port }}"
-
-- name: Update stats with hop2 port
-  lineinfile:
-    path: "{{ project_path }}/stats.yml"
-    line: "hop2_port: {{ hop2_port }}"
-
 # Update fact prior to template
 - set_fact:
     hop_name: "{{ hop1_name }}"
@@ -59,7 +26,7 @@
   replace:
     path: "{{ project_path}}/modules/hop1_{{ provider1 }}/vars.tf"
     regexp: "namenamenamename"
-    replace: "{{ cloudname }}1"
+    replace: "{{ hop1_resource_name }}1"
 
 - name: Set private key
   replace:
@@ -77,7 +44,7 @@
   replace:
     path: "{{ project_path}}/modules/hop1_{{ provider1 }}/vars.tf"
     regexp: "wireguardport"
-    replace: "{{ hop1_port }}"
+    replace: "{{ wg_port1 }}"
 
 - name: Move vars file 2
   template:
@@ -88,7 +55,7 @@
   replace:
     path: "{{ project_path}}/modules/hop2_{{ provider2 }}/vars.tf"
     regexp: "namenamenamename"
-    replace: "{{ cloudname }}2"
+    replace: "{{ hop2_resource_name }}2"
 
 - name: Set private key
   replace:
@@ -106,7 +73,7 @@
   replace:
     path: "{{ project_path}}/modules/hop2_{{ provider2 }}/vars.tf"
     regexp: "wireguardport"
-    replace: "{{ hop2_port }}"
+    replace: "{{ wg_port2 }}"
 
 - name: Deploy resources 1
   terraform:

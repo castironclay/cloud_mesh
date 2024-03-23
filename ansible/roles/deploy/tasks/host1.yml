@@ -1,12 +1,7 @@
-- name: Ansible fact - ansible_date_time.iso8601
-  lineinfile:
-    path: "{{ project_path }}/stats.yml"
-    line: "build_date: {{ ansible_date_time.iso8601 }}"
-
-- name: Update stats.yml
-  lineinfile:
-    path: "{{ project_path }}/stats.yml"
-    line: "hop1_ip: {{ deployment.outputs.hop1_public_ip.value }}"
+# - name: Update stats.yml
+#   lineinfile:
+#     path: "{{ project_path }}/stats.yml"
+#     line: "hop1_ip: {{ deployment.outputs.hop1_public_ip.value }}"
 
 # Use correct username based on provider
 # Might a better way of doing this
@@ -32,6 +27,6 @@
     ansible_python_interpreter: /usr/bin/python3
   when: ( provider1 == "linode" or provider1 == "exoscale" or provider1 == "vultr" or provider1 == "digitalocean" )
 
-- name: Sleep for 3
+- name: Sleep for 1
   wait_for:
-    timeout: 3
+    timeout: 1
