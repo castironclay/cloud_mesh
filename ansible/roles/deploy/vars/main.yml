@@ -1,7 +1,4 @@
 ---
-azure:
-  - username: debian
-
 aws:
   - username: admin
 
