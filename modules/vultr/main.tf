@@ -1,6 +1,6 @@
 resource "vultr_instance" "my_instance" {
   plan              = "vc2-1c-1gb"
-  region            = "ord" # Chicago
+  region            = random_shuffle.regions.result[0]
   os_id             = "477" # Debian 11
   backups           = "disabled"
   hostname          = var.name
@@ -15,7 +15,7 @@ resource "vultr_instance" "my_instance" {
     connection {
       type        = "ssh"
       user        = "root"
-      private_key = file("./id_ssh_rsa")
+      private_key = file(var.private_keyname)
       host        = vultr_instance.my_instance.main_ip
     }
   }
@@ -23,7 +23,7 @@ resource "vultr_instance" "my_instance" {
 }
 resource "vultr_ssh_key" "my_ssh_key" {
   name    = var.name
-  ssh_key = file("./id_ssh_rsa.pub")
+  ssh_key = file(var.public_keyname)
 }
 
 resource "vultr_firewall_group" "my_firewallgroup" {
@@ -40,3 +40,42 @@ resource "vultr_firewall_rule" "my_firewallrule" {
   notes             = "Allow SSH"
   depends_on        = [vultr_firewall_group.my_firewallgroup]
 }
+
+resource "random_shuffle" "regions" {
+  input = [
+    "ams",
+    "atl",
+    "blr",
+    "bom",
+    "cdg",
+    "del",
+    "dfw",
+    "ewr",
+    "fra",
+    "hnl",
+    "icn",
+    "itm",
+    "jnb",
+    "lax",
+    "lhr",
+    "mad",
+    "man",
+    "mel",
+    "mex",
+    "mia",
+    "nrt",
+    "ord",
+    "sao",
+    "scl",
+    "sea",
+    "sgp",
+    "sjc",
+    "sto",
+    "syd",
+    "tlv",
+    "waw",
+    "yto"
+  ]
+  result_count = 1
+}
+
