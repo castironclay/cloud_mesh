@@ -1,7 +1,5 @@
 ---
 first_hop:
-  - vultr
-  - digitalocean
+  - exoscale
 second_hop:
-  - linode
-  - aws
+  - exoscale

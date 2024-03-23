@@ -7,5 +7,9 @@ terraform {
       source  = "linode/linode"
       version = "2.15.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "3.6.0"
+    }
   }
 }

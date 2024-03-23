@@ -1,12 +1,12 @@
 data "exoscale_template" "my_template" {
-  zone = "ch-gva-2"
-  name = "Linux Ubuntu 22.04 LTS 64-bit"
+  zone = element(data.exoscale_zones.example_zones.zones, random_integer.zone.result)
+  name = "Linux Debian 12 (Bookworm) 64-bit"
 }
 
 resource "exoscale_compute_instance" "my_instance" {
-  zone = "ch-gva-2"
-  name = var.name
-
+  depends_on         = [data.exoscale_template.my_template]
+  zone               = element(data.exoscale_zones.example_zones.zones, random_integer.zone.result)
+  name               = var.name
   template_id        = data.exoscale_template.my_template.id
   type               = "standard.medium"
   disk_size          = 10
@@ -18,7 +18,7 @@ resource "exoscale_compute_instance" "my_instance" {
     connection {
       type        = "ssh"
       user        = "root"
-      private_key = file("./id_ssh_rsa")
+      private_key = file(var.private_keyname)
       host        = exoscale_compute_instance.my_instance.public_ip_address
     }
   }
@@ -41,6 +41,14 @@ resource "exoscale_security_group_rule" "my_security_group_rule" {
 
 resource "exoscale_ssh_key" "my_ssh_key" {
   name       = var.name
-  public_key = file("./id_ssh_rsa.pub")
+  public_key = file(var.public_keyname)
 }
 
+data "exoscale_zones" "example_zones" {}
+
+
+resource "random_integer" "zone" {
+  depends_on = [data.exoscale_zones.example_zones]
+  min        = 1
+  max        = length(data.exoscale_zones.example_zones.zones)
+}

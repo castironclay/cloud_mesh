@@ -4,6 +4,10 @@ terraform {
       source  = "exoscale/exoscale"
       version = "0.55.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "3.6.0"
+    }
   }
 }
 

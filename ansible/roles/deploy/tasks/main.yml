@@ -88,6 +88,14 @@
     project_path: "{{ project_path }}"
     force_init: true
     state: present
+    targets: ["module.hop1_exoscale.data.exoscale_template.my_template", "module.hop2_exoscale.data.exoscale_template.my_template"]
+  when: provider1 == "exoscale"
+
+- name: Deploy resources 1
+  terraform:
+    project_path: "{{ project_path }}"
+    force_init: true
+    state: present
   when: provider1 != "aws"
 
 - name: Deploy resources 2
