@@ -25,14 +25,19 @@ def read_creds_file(creds) -> dict:
     return all_creds
 
 
-def gather_providers(providers) -> list[str]:
+def gather_providers(providers: str) -> dict[str, list[str]]:
     with open(providers, "r") as file:
         all_providers = yaml.safe_load(file)
-
     return all_providers
 
 
-def providers_with_creds(creds: dict, providers: list) -> list:
+def choose_one(providers: list) -> list[str]:
+    chosen_provider = random.choices(providers, k=1)
+
+    return chosen_provider
+
+
+def providers_with_creds(creds: dict, providers: list[str]) -> list:
     valid_providers = []
     for provider in providers:
         if provider in creds.keys():
@@ -51,51 +56,56 @@ def make_op_path(base_path: str) -> UUID:
     return op_name
 
 
-def choose_two(providers: list) -> list[str]:
-    chosen_providers = random.choices(providers, k=2)
-
-    return chosen_providers
-
-
 def copy_specific_modules(
-    script_path: str, dest_dir: str, modules_to_copy: list
+    script_path: str, dest_dir: str, provider1: str, provider2: str
 ) -> None:
     src_dir = os.path.join(script_path, "modules")
-    for index, module in enumerate(modules_to_copy):
-        index += 1
-        dest_folder_name = f"hop{index}" + "_" + str(module)
-        src_folder_path = os.path.join(src_dir, module)
-        dest_folder_path = os.path.join(dest_dir, dest_folder_name)
+    # Provider1
+    dest_folder_name = f"hop1" + "_" + provider1
+    src_folder_path = os.path.join(src_dir, provider1)
+    dest_folder_path = os.path.join(dest_dir, dest_folder_name)
+    shutil.copytree(src_folder_path, dest_folder_path)
 
-        shutil.copytree(src_folder_path, dest_folder_path)
+    # Provider2
+    dest_folder_name = f"hop1" + "_" + provider2
+    src_folder_path = os.path.join(src_dir, provider2)
+    dest_folder_path = os.path.join(dest_dir, dest_folder_name)
+
+    shutil.copytree(src_folder_path, dest_folder_path)
 
 
 def setup_terraform(
     script_path: str, creds_file: str, providers: str, base_path: str
 ) -> tuple:
     creds = read_creds_file(creds_file)
-    providers = gather_providers(providers)
+    gathered_providers = gather_providers(providers)
 
-    valid_providers = providers_with_creds(creds, list(providers))
-    logger.success(f"Credentials discovered for {valid_providers}")
+    valid_hop1_providers = providers_with_creds(
+        creds, gathered_providers.get("first_hop")
+    )
+    valid_hop2_providers = providers_with_creds(
+        creds, gathered_providers.get("second_hop")
+    )
 
-    select_two = choose_two(valid_providers)
-    logger.success(f"Providers chosen: {select_two}")
+    # Choose first and second hop providers
+    provider1 = choose_one(valid_hop1_providers)[0]
+    provider2 = choose_one(valid_hop2_providers)[0]
+    logger.success(f"Provider 1: {provider1} | Provider 2: {provider2}")
 
     # Move modules to project directory
     chain_id = make_op_path(base_path)
     dest_directory = f"{base_path}/{chain_id}/modules"
-    copy_specific_modules(script_path, dest_directory, select_two)
-    generate_vars_file(creds, select_two, base_path, chain_id)
+    copy_specific_modules(script_path, dest_directory, provider1, provider2)
+    generate_vars_file(creds, provider1, provider2, base_path, chain_id)
 
     project_path = f"{base_path}/{chain_id}"
-    return project_path, select_two, chain_id
+    return project_path, provider1, provider2, chain_id
 
 
 def ansible_deploy(
-    script_path: str, project_path: str, select_two: list, chain_id: str
+    script_path: str, project_path: str, provider1: str, provider2: str, chain_id: str
 ):
-    command = f"ansible-playbook {script_path}/ansible/deploy.yml -e project_path={project_path} -e provider1={select_two[0]} -e provider2={select_two[1]} -e project_id={chain_id}"
+    command = f"ansible-playbook {script_path}/ansible/deploy.yml -e project_path={project_path} -e provider1={provider1} -e provider2={provider2} -e project_id={chain_id}"
 
     process = subprocess.Popen(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
@@ -115,8 +125,9 @@ if __name__ == "__main__":
     providers = f"{script_path}/providers.yaml"
     base_path = "/tmp"
 
-    project_path, select_two, chain_id = setup_terraform(
+    project_path, provider1, provider2, chain_id = setup_terraform(
         script_path, creds_file, providers, base_path
     )
+
     generate_keys(project_path)
-    ansible_deploy(script_path, project_path, select_two, chain_id)
+    ansible_deploy(script_path, project_path, provider1, provider2, chain_id)

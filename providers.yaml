@@ -1,2 +1,7 @@
 ---
-- vultr
+first_hop:
+  - vultr
+  - digitalocean
+second_hop:
+  - linode
+  - aws

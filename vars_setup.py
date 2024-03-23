@@ -1,4 +1,5 @@
 import os
+from uuid import UUID
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -8,16 +9,15 @@ environment = Environment(
 
 
 def generate_vars_file(
-    creds: dict, providers: list, base_path: str, chain_id: str
+    creds: dict, provider1: str, provider2: str, base_path: str, chain_id: UUID
 ) -> None:
     """
     Build the vars.tf file for the project by rendering and combining the variables for both providers.
     Dedup to ensure we aren't writing the same variable names twice and causing a Terraform error.
     """
-    if len(set(providers)) == 1:
+    if provider1 == provider2:
         # Both values are the same, only execute the function once
-        provider = providers[0]
-        content = globals()[provider](creds)
+        content = globals()[provider1](creds)
 
         with open(
             f"{base_path}/{chain_id}/vars.tf", mode="w", encoding="utf-8"
@@ -28,10 +28,13 @@ def generate_vars_file(
         with open(
             f"{base_path}/{chain_id}/vars.tf", mode="w", encoding="utf-8"
         ) as message:
-            for provider in providers:
-                content = globals()[provider](creds)
-                message.write(content)
-                message.write("\n")
+            content = globals()[provider1](creds)
+            message.write(content)
+            message.write("\n")
+
+            content = globals()[provider2](creds)
+            message.write(content)
+            message.write("\n")
 
 
 def aws(creds: dict) -> str:
