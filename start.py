@@ -10,6 +10,7 @@ from jinja2 import Environment, FileSystemLoader
 from loguru import logger
 from rich import print as rprint
 
+from gen_ssh import generate_keys
 from vars_setup import generate_vars_file
 
 environment = Environment(
@@ -117,5 +118,5 @@ if __name__ == "__main__":
     project_path, select_two, chain_id = setup_terraform(
         script_path, creds_file, providers, base_path
     )
-
+    generate_keys(project_path)
     ansible_deploy(script_path, project_path, select_two, chain_id)

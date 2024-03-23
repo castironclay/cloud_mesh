@@ -32,14 +32,6 @@
     path: "{{ project_path }}/stats.yml"
     line: "hop2_port: {{ hop2_port }}"
 
-- name: Generate hop1 OpenSSH keypair (4096 bits, rsa)
-  community.crypto.openssh_keypair:
-    path: "/{{ project_path }}/id_ssh_rsa1"
-
-- name: Generate hop2 OpenSSH keypair (4096 bits, rsa)
-  community.crypto.openssh_keypair:
-    path: "/{{ project_path }}/id_ssh_rsa2"
-
 # Update fact prior to template
 - set_fact:
     hop_name: "{{ hop1_name }}"

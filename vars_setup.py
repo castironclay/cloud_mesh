@@ -48,9 +48,7 @@ def aws(creds: dict) -> str:
 
     template = environment.get_template("aws_vars.tf")
 
-    content = template.render(
-        AWS_ACCESS_KEY=access_key, AWS_SECRET_KEY=secret_key
-    )
+    content = template.render(AWS_ACCESS_KEY=access_key, AWS_SECRET_KEY=secret_key)
 
     return content
 
@@ -73,6 +71,8 @@ def digitalocean(creds: dict) -> str:
     )
 
     return content
+
+
 def linode(creds: dict) -> str:
     template = environment.get_template("linode_vars.tf")
     key = creds.get("linode").get("key")
