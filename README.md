@@ -8,14 +8,15 @@ Supported providers
 - vultr
 
 ## providers.yaml
-Format of file. Add any providers you may have.
+Format of file. Add any providers you may have and specific them for first or second hop.
+If more than one provider is listed then a selection will happen randomly from the list. 
 ```yaml
 ---
-- linode
-- vultr
-- exoscale
-- aws
-- azure
+first_hop:
+  - linode
+  - aws
+second_hop:
+  - gcp
 ```
 
 ## keys.yaml
@@ -25,6 +26,9 @@ Format of file. Add any keys you may have.
 aws:
   access_key: 
   secret_key: 
+
+digitalocean:
+  key: 
 
 linode:
   key: 
@@ -36,11 +40,6 @@ exoscale:
   access_key: 
   secret_key: 
 
-azure:
-  app_client_id: 
-  tenant: 
-  secret: 
-  sub_id: 
 ```
 ## Run
 ```bash
