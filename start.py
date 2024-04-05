@@ -112,6 +112,10 @@ def setup_terraform(
     dest_directory = f"{base_path}/{chain_id}/modules"
     copy_specific_modules(script_path, dest_directory, provider1, provider2)
     generate_vars_file(creds, provider1, provider2, base_path, chain_id)
+    
+    # Move GCP file if required
+    if "gcp" in creds.keys():
+        shutil.copyfile(f'{script_path}/{creds.get('gcp').get('creds_file')}', f'{base_path}/{chain_id}/{creds.get('gcp').get('creds_file')}')
 
     project_path = f"{base_path}/{chain_id}"
     return project_path, provider1, provider2, chain_id

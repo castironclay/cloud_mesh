@@ -8,10 +8,6 @@ variable "type" {
   description = "Size of compute instance"
 }
 
-variable "gce_user" {
-  default = "admin"
-}
-
 variable "wg_port" {
   default = "wireguardport"
 }
@@ -20,6 +16,15 @@ variable "region" {
   default = "us-east1"
 }
 
-variable "GOOGLE_PROJECT" {
-  description = "Name of project within GCP"
+variable "private_keyname" {
+  default = "./prikey"
+  type    = string
 }
+
+variable "public_keyname" {
+  default = "./pubkey"
+  type    = string
+}
+
+variable "GCP_PROJECT" {}
+variable "GCP_CREDS" {}

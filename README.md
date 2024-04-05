@@ -1,11 +1,16 @@
 # cloud_mesh
 Supported providers
 - aws
-- azure
 - exoscale
-- gcp (not complete)
+- gcp 
 - linode
 - vultr
+- digitalocean
+
+## features
+- randomized regions
+- randomized providers
+- multiple redirection methods
 
 ## providers.yaml
 Format of file. Add any providers you may have and specific them for first or second hop.
@@ -30,16 +35,18 @@ aws:
 digitalocean:
   key: 
 
-linode:
-  key: 
-
-vultr:
-  key: 
+gcp:
+  enabled: (true|false) # Creds file should be located within root of project named gcp_creds.json
 
 exoscale:
   access_key: 
   secret_key: 
 
+linode:
+  key: 
+
+vultr:
+  key: 
 ```
 ## Run
 ```bash

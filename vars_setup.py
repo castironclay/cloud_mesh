@@ -87,6 +87,19 @@ def linode(creds: dict) -> str:
     return content
 
 
+def gcp(creds: dict) -> str:
+    template = environment.get_template("gcp_vars.tf")
+    creds_file = creds.get("gcp").get("creds_file")
+    project_id = creds.get("gcp").get("project_id")
+
+    content = template.render(
+        GCP_CREDS=creds_file,
+        GCP_PROJECT=project_id,
+    )
+
+    return content
+
+
 def vultr(creds: dict) -> str:
     template = environment.get_template("vultr_vars.tf")
     key = creds.get("vultr").get("key")

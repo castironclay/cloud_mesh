@@ -1,4 +1,3 @@
-
 data "google_compute_image" "ubuntu_image" {
   family  = "debian-11"
   project = "debian-cloud"
@@ -15,7 +14,6 @@ resource "google_compute_instance" "host" {
   }
   network_interface {
     network = "default"
-    # Blank access_config = ephemeral IP not static
     access_config {}
   }
   provisioner "remote-exec" {
@@ -23,13 +21,13 @@ resource "google_compute_instance" "host" {
 
     connection {
       type        = "ssh"
-      user        = var.gce_user
-      private_key = file("./id_ssh_rsa")
+      user        = "admin"
+      private_key = file(var.private_keyname)
       host        = google_compute_instance.host.network_interface.0.access_config.0.nat_ip
     }
   }
   metadata = {
-    ssh-keys = "${var.gce_user}:${file("./id_ssh_rsa.pub")}"
+    ssh-keys = "admin:${file(var.public_keyname)}"
   }
 }
 

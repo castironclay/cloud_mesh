@@ -1,6 +1,7 @@
 module "{{ hop_name }}" {
   source = "./modules/{{ hop_name }}"
-  GOOGLE_PROJECT = var.GOOGLE_PROJECT
+  GCP_PROJECT = var.GCP_PROJECT
+  GCP_CREDS = var.GCP_CREDS
 }
 
 {% if 'hop1' in hop_name %}

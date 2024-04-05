@@ -1,5 +1,6 @@
 provider "google" {
-  project = var.GOOGLE_PROJECT
+  project     = var.GCP_PROJECT
+  credentials = var.GCP_CREDS
 }
 terraform {
   required_providers {
