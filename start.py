@@ -115,7 +115,7 @@ def setup_terraform(
     
     # Move GCP file if required
     if "gcp" in creds.keys():
-        shutil.copyfile(f'{script_path}/{creds.get('gcp').get('creds_file')}', f'{base_path}/{chain_id}/{creds.get('gcp').get('creds_file')}')
+        shutil.copyfile(f"{script_path}/{creds.get('gcp').get('creds_file')}", f"{base_path}/{chain_id}/{creds.get('gcp').get('creds_file')}")
 
     project_path = f"{base_path}/{chain_id}"
     return project_path, provider1, provider2, chain_id
