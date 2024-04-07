@@ -2,4 +2,4 @@
 first_hop:
   - linode
 second_hop:
-  - gcp
+  - linode
