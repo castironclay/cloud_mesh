@@ -1,3 +1,5 @@
+import datetime
+import json
 import os
 import random
 import shutil
@@ -12,6 +14,7 @@ from loguru import logger
 from rich import print as rprint
 
 from gen_ssh import generate_keys
+from parse_state import get_ips
 from vars_setup import generate_vars_file
 
 environment = Environment(
@@ -112,10 +115,13 @@ def setup_terraform(
     dest_directory = f"{base_path}/{chain_id}/modules"
     copy_specific_modules(script_path, dest_directory, provider1, provider2)
     generate_vars_file(creds, provider1, provider2, base_path, chain_id)
-    
+
     # Move GCP file if required
     if "gcp" in creds.keys():
-        shutil.copyfile(f"{script_path}/{creds.get('gcp').get('creds_file')}", f"{base_path}/{chain_id}/{creds.get('gcp').get('creds_file')}")
+        shutil.copyfile(
+            f"{script_path}/{creds.get('gcp').get('creds_file')}",
+            f"{base_path}/{chain_id}/{creds.get('gcp').get('creds_file')}",
+        )
 
     project_path = f"{base_path}/{chain_id}"
     return project_path, provider1, provider2, chain_id
@@ -123,7 +129,7 @@ def setup_terraform(
 
 def ansible_deploy(
     script_path: str, project_path: str, provider1: str, provider2: str, chain_id: str
-):
+) -> tuple:
     hop1_resource_name, hop2_resource_name, wg_port1, wg_port2 = random_values()
     command = f"ansible-playbook {script_path}/ansible/deploy.yml -e project_path={project_path} -e provider1={provider1} -e provider2={provider2} -e project_id={chain_id} \
                 -e hop1_resource_name={hop1_resource_name} -e hop2_resource_name={hop2_resource_name} -e wg_port1={wg_port1} -e wg_port2={wg_port2}"
@@ -139,6 +145,35 @@ def ansible_deploy(
         rprint(line, end="")
     process.wait()
 
+    provider1_ip, provider2_ip = get_ips(f"{project_path}/terraform.tfstate")
+
+    return provider1_ip, provider2_ip
+
+
+def create_receipt_file(
+    project_path: str,
+    provider1: str,
+    provider2: str,
+    provider1_ip: str,
+    provider2_ip: str,
+    chain_id: str,
+):
+    receipt = dict({})
+    now = datetime.datetime.now()
+    receipt["created"] = now.strftime("%Y-%m-%d %H:%M:%S")
+    receipt["id"] = str(chain_id)
+    receipt["provider1"] = provider1
+    receipt["provider2"] = provider2
+    receipt["provider1_ip"] = provider1_ip
+    receipt["provider2_ip"] = provider2_ip
+
+    json_data = json.dumps(receipt)
+
+    with open(f"{project_path}/receipt.json", "w") as json_file:
+        json_file.write(json_data)
+
+    return json_data
+
 
 if __name__ == "__main__":
     script_path = os.path.dirname(os.path.abspath(__file__))
@@ -151,4 +186,10 @@ if __name__ == "__main__":
     )
 
     generate_keys(project_path)
-    ansible_deploy(script_path, project_path, provider1, provider2, chain_id)
+    provider1_ip, provider2_ip = ansible_deploy(
+        script_path, project_path, provider1, provider2, chain_id
+    )
+    receipt_data = create_receipt_file(
+        project_path, provider1, provider2, provider1_ip, provider2_ip, chain_id
+    )
+    logger.success(receipt_data)

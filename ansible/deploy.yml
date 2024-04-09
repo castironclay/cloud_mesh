@@ -14,6 +14,7 @@
     wg_port2: "{{ wg_port2 }}"
     hop1_resource_name: "{{ hop1_resource_name }}"
     hop2_resource_name: "{{ hop2_resource_name }}"
+    socks_proxy: True
 
 - hosts: all
   tasks:

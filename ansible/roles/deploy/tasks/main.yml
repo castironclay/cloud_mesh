@@ -44,7 +44,7 @@
     state: present
     targets: ["module.hop1_aws.random_shuffle.regions", "module.hop2_aws.random_shuffle.regions"]
   when: provider1 == "aws"
-  register: deployment
+  register: deployment1
 
 - name: Deploy resources 1
   terraform:
@@ -53,7 +53,7 @@
     state: present
     targets: ["module.hop1_exoscale.data.exoscale_template.my_template", "module.hop2_exoscale.data.exoscale_template.my_template"]
   when: provider1 == "exoscale"
-  register: deployment
+  register: deployment1
 
 - name: Deploy resources 1
   terraform:
@@ -61,16 +61,18 @@
     force_init: true
     state: present
   when: provider1 != "aws"
-  register: deployment
+  register: deployment1
 
 - name: Start SOCKS proxy
   shell:
-    cmd: "ssh -D 12345 -f -C -N -S /tmp/.ssh_socks -M -o StrictHostKeyChecking=no -i id_ssh_rsa1 root@{{ deployment.outputs.hop1_public_ip.value }}"
+    cmd: "ssh -D 12345 -f -C -N -S /tmp/.ssh_socks -M -o StrictHostKeyChecking=no -i id_ssh_rsa1 root@{{ deployment1.outputs.hop1_public_ip.value }}"
     chdir: "{{ project_path }}"
+  when: socks_proxy
 
 - name: Pause 5 seconds to ensure proxy is established
   pause:
     seconds: 5
+  when: socks_proxy
 
 # Update fact prior to template
 - set_fact:
@@ -121,7 +123,7 @@
     http_proxy: socks5://127.0.0.1:12345
     https_proxy: socks5://127.0.0.1:12345
     all_proxy: socks5://127.0.0.1:12345
-  register: deployment
+  register: deployment2
 
 - name: Deploy resources 2
   terraform:
@@ -134,7 +136,7 @@
     http_proxy: socks5://127.0.0.1:12345
     https_proxy: socks5://127.0.0.1:12345
     all_proxy: socks5://127.0.0.1:12345
-  register: deployment
+  register: deployment2
 
 - name: Deploy resources 2
   terraform:
@@ -146,7 +148,7 @@
     http_proxy: socks5://localhost:12345
     https_proxy: socks5://localhost:12345
     all_proxy: socks5://localhost:12345
-  register: deployment
+  register: deployment2
 
 - name: Host 1
   include_tasks: host1.yml

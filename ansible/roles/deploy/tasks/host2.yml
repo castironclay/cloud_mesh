@@ -1,12 +1,7 @@
-# - name: Update stats.yml
-#   lineinfile:
-#     path: "{{ project_path }}/stats.yml"
-#     line: "hop2_ip: {{ deployment.outputs.hop2_public_ip.value }}"
-
 - name: Add host
   add_host:
     name: hop2
-    ansible_host: "{{ deployment.outputs.hop2_public_ip.value }}"
+    ansible_host: "{{ deployment2.outputs.hop2_public_ip.value }}"
     groups: "{{ provider2 }}_hop2"
     ansible_ssh_private_key_file: "{{ project_path }}/id_ssh_rsa2"
     ansible_user: admin
@@ -17,14 +12,10 @@
 - name: Add host
   add_host:
     name: hop2
-    ansible_host: "{{ deployment.outputs.hop2_public_ip.value }}"
+    ansible_host: "{{ deployment2.outputs.hop2_public_ip.value }}"
     groups: "{{ provider2 }}_hop2"
     ansible_ssh_private_key_file: "{{ project_path }}/id_ssh_rsa2"
     ansible_user: root
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
     ansible_python_interpreter: /usr/bin/python3
   when: ( provider2 == "linode" or provider2 == "exoscale" or provider2 == "vultr" or provider2 == "digitalocean" )
-
-- name: Sleep for 1
-  wait_for:
-    timeout: 1

@@ -1,14 +1,7 @@
-# - name: Update stats.yml
-#   lineinfile:
-#     path: "{{ project_path }}/stats.yml"
-#     line: "hop1_ip: {{ deployment.outputs.hop1_public_ip.value }}"
-
-# Use correct username based on provider
-# Might a better way of doing this
 - name: Add host
   add_host:
     name: hop1
-    ansible_host: "{{ deployment.outputs.hop1_public_ip.value }}"
+    ansible_host: "{{ deployment1.outputs.hop1_public_ip.value }}"
     groups: "{{ provider1 }}_hop1"
     ansible_ssh_private_key_file: "{{ project_path }}/id_ssh_rsa1"
     ansible_user: admin
@@ -19,14 +12,10 @@
 - name: Add host
   add_host:
     name: hop1
-    ansible_host: "{{ deployment.outputs.hop1_public_ip.value }}"
+    ansible_host: "{{ deployment1.outputs.hop1_public_ip.value }}"
     groups: "{{ provider1 }}_hop1"
     ansible_ssh_private_key_file: "{{ project_path }}/id_ssh_rsa1"
     ansible_user: root
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
     ansible_python_interpreter: /usr/bin/python3
   when: ( provider1 == "linode" or provider1 == "exoscale" or provider1 == "vultr" or provider1 == "digitalocean" )
-
-- name: Sleep for 1
-  wait_for:
-    timeout: 1
