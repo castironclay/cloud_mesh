@@ -11,4 +11,4 @@
     image: nginx
     volumes:
       - /root/stream.conf:/etc/nginx/nginx.conf
-    published_ports: "51820:51820"
+    published_ports: "{{ nginx_listen_port }}:{{ nginx_listen_port }}"
