@@ -46,7 +46,6 @@ def ansible_destroy(script_path: str, project_path: str):
     process = subprocess.Popen(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
     )
-    print(command)
 
     while True:
         line = process.stdout.readline()
@@ -66,6 +65,6 @@ if __name__ == "__main__":
     else:
         selected_folder = select_folder_from_list(uuid_folders)
         print(f"You selected: {selected_folder}")
-    project_path = f"{base_path}/{selected_folder}"
-    ansible_destroy(script_path, project_path)
-    shutil.rmtree(project_path)
+        project_path = f"{base_path}/{selected_folder}"
+        ansible_destroy(script_path, project_path)
+        shutil.rmtree(project_path)

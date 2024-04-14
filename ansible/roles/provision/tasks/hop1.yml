@@ -1,17 +1,14 @@
 ---
-- name: Set Client Conf File Tunnel 1
+- name: Push stream.conf
   become: true
   template:
-    src: templates/wg1-client.conf
-    dest: /etc/wireguard/wg1-client.conf
-  with_items: "{{ hop1_host }}"
-  tags: redeploy
+    src: templates/stream.conf
+    dest: /root/stream.conf
 
-- name: Set Server Conf File Tunnel 2
-  become: true
-  template:
-    src: templates/wg2.conf
-    dest: /etc/wireguard/wg2.conf
-  with_items: "{{ hop1_host }}"
-  tags: redeploy
-
+- name: Create nginx container
+  docker_container:
+    name: nginx
+    image: nginx
+    volumes:
+      - /root/stream.conf:/etc/nginx/nginx.conf
+    published_ports: "51820:51820"

@@ -24,3 +24,5 @@
     - name: Provision role
       include_role:
         name: ./roles/provision
+      vars:
+        hop2_ip: 11.22.33.44

@@ -22,10 +22,10 @@
   lineinfile: dest={{ sshd_config }} regexp="^(#\s*)?PasswordAuthentication " line="PasswordAuthentication no"
   notify: "restart ssh"
 
-# - name: Setup Hop 1
-#   include_tasks: hop1.yml
-#   when: inventory_hostname == 'hop1'
-#
+- name: Setup Hop 1
+  include_tasks: hop1.yml
+  when: inventory_hostname == 'hop1'
+
 # - name: Setup Hop 2
 #   include_tasks: hop2.yml
 #   when: inventory_hostname == 'hop2'

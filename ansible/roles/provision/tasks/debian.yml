@@ -1,27 +1,9 @@
 ---
-- name: Stop sshguard
-  become: true
-  systemd:
-    state: stopped
-    name: sshguard
-  when: "'gcp' in group_names"
-  tags: redeploy
-
-- name: Disable and mask sshguard
-  become: true
-  systemd:
-    enabled: no
-    masked: yes
-    name: sshguard
-  when: "'gcp' in group_names"
-  tags: redeploy
-
 - name: Update and upgrade apt packages
   become: true
   apt:
     upgrade: yes
     update_cache: yes
-  tags: redeploy
 
 - name: Install Apps
   become: true
@@ -30,9 +12,4 @@
       - iproute2
       - net-tools
       - iptables
-  tags: redeploy
-
-- name: Install Wireguard
-  become: true
-  apt:
-    name: wireguard
+      - docker.io
