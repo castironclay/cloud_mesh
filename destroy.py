@@ -1,14 +1,10 @@
 #!/usr/bin/python3
 import os
+import shutil
 import subprocess
 import uuid
 
-from jinja2 import Environment, FileSystemLoader
 from rich import print as rprint
-
-environment = Environment(
-    loader=FileSystemLoader(f"{os.path.dirname(os.path.abspath(__file__))}/templates/")
-)
 
 
 def list_folders(base_path: str):
@@ -72,3 +68,4 @@ if __name__ == "__main__":
         print(f"You selected: {selected_folder}")
     project_path = f"{base_path}/{selected_folder}"
     ansible_destroy(script_path, project_path)
+    shutil.rmtree(project_path)

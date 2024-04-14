@@ -21,10 +21,6 @@
     - name: Ping all hosts
       ansible.builtin.ping:
 
-    # - name: Provision role
-    #   include_role:
-    #     name: ./roles/provision
-    #
-    # - name: Include vars
-    #   include_vars:
-    #     file: ./roles/provision/vars/main.yml
+    - name: Provision role
+      include_role:
+        name: ./roles/provision

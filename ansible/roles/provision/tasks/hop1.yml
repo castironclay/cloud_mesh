@@ -15,26 +15,3 @@
   with_items: "{{ hop1_host }}"
   tags: redeploy
 
-- name: Setup WG1-Client Namespace
-  become: true
-  shell: |
-    ip netns add wireguard
-    ip link add wg1-client type wireguard
-    ip link set netns wireguard dev wg1-client
-    ip -n wireguard addr add 10.1.1.2/24 dev wg1-client
-    ip netns exec wireguard wg setconf wg1-client /etc/wireguard/wg1-client.conf
-    ip -n wireguard link set wg1-client up
-    ip -n wireguard route add default dev wg1-client
-    ip netns exec wireguard iptables -t nat -I POSTROUTING -o wg1-client -j MASQUERADE
-  tags: redeploy
-
-- name: Setup WG2 Namespace
-  become: true
-  shell: |
-    ip netns add wireguard
-    ip link add wg2 type wireguard
-    ip link set netns wireguard dev wg2
-    ip -n wireguard addr add 10.2.1.1/24 dev wg2
-    ip netns exec wireguard wg setconf wg2 /etc/wireguard/wg2.conf
-    ip -n wireguard link set wg2 up
-  tags: redeploy
