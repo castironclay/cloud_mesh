@@ -8,10 +8,6 @@ variable "type" {
   description = "Size of compute instance"
 }
 
-variable "wg_port" {
-  default = "wireguardport"
-}
-
 variable "region" {
   default = "us-east1"
 }

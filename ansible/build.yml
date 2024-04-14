@@ -10,8 +10,6 @@
     hop2_name: "hop2_{{ provider2 }}"
     project_path: "{{ project_path }}"
     project_id: "{{ project_id }}"
-    wg_port1: "{{ wg_port1 }}"
-    wg_port2: "{{ wg_port2 }}"
     hop1_resource_name: "{{ hop1_resource_name }}"
     hop2_resource_name: "{{ hop2_resource_name }}"
     socks_proxy: True
@@ -26,3 +24,5 @@
         name: ./roles/provision
       vars:
         hop2_ip: "{{ hostvars['hop2'].ansible_host }}"
+        nginx_listen_port: "{{ nginx_listen_port }}"
+        wg_port: "{{ wg_port }}"

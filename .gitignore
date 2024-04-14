@@ -1,6 +1,7 @@
 keys.yaml
 # Local .terraform directories
 **/.terraform/*
+.null-ls*
 
 # .tfstate files
 *.tfstate
