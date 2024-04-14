@@ -25,4 +25,4 @@
       include_role:
         name: ./roles/provision
       vars:
-        hop2_ip: 11.22.33.44
+        hop2_ip: "{{ hostvars['hop2'].ansible_host }}"
