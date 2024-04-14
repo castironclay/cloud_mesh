@@ -4,14 +4,13 @@ data "exoscale_template" "my_template" {
 }
 
 resource "exoscale_compute_instance" "my_instance" {
-  depends_on         = [data.exoscale_template.my_template]
-  zone               = element(data.exoscale_zones.example_zones.zones, random_integer.zone.result)
-  name               = var.name
-  template_id        = data.exoscale_template.my_template.id
-  type               = "standard.medium"
-  disk_size          = 10
-  ssh_key            = exoscale_ssh_key.my_ssh_key.name
-  security_group_ids = [exoscale_security_group.my_security_group.id]
+  depends_on  = [data.exoscale_template.my_template, exoscale_ssh_key.my_ssh_key]
+  zone        = element(data.exoscale_zones.example_zones.zones, random_integer.zone.result)
+  name        = var.name
+  template_id = data.exoscale_template.my_template.id
+  type        = "standard.medium"
+  disk_size   = 10
+  ssh_key     = exoscale_ssh_key.my_ssh_key.name
   provisioner "remote-exec" {
     inline = ["echo 'Im alive!'"]
 
@@ -23,20 +22,6 @@ resource "exoscale_compute_instance" "my_instance" {
     }
   }
 
-}
-
-resource "exoscale_security_group" "my_security_group" {
-  name = var.name
-}
-
-resource "exoscale_security_group_rule" "my_security_group_rule" {
-  security_group_id = exoscale_security_group.my_security_group.id
-  type              = "INGRESS"
-  protocol          = "TCP"
-  cidr              = "0.0.0.0/0"
-  start_port        = 22
-  end_port          = 22
-  depends_on        = [exoscale_security_group.my_security_group]
 }
 
 resource "exoscale_ssh_key" "my_ssh_key" {

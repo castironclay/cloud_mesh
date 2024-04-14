@@ -39,23 +39,3 @@ resource "linode_sshkey" "host_key" {
   label   = var.key_name
   ssh_key = chomp(file(var.public_keyname))
 }
-resource "linode_firewall" "my_firewall" {
-  depends_on = [linode_instance.host]
-  label      = var.linode_label
-
-  inbound {
-    label    = "allow-ssh"
-    action   = "ACCEPT"
-    protocol = "TCP"
-    ports    = "22"
-    ipv4     = ["0.0.0.0/0"]
-    ipv6     = ["::/0"]
-  }
-
-  inbound_policy = "DROP"
-
-  outbound_policy = "ACCEPT"
-
-  linodes = [linode_instance.host.id]
-}
-

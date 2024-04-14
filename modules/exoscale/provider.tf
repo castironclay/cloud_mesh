@@ -2,7 +2,7 @@ terraform {
   required_providers {
     exoscale = {
       source  = "exoscale/exoscale"
-      version = "0.55.0"
+      version = "0.57.0"
     }
     random = {
       source  = "hashicorp/random"

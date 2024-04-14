@@ -36,18 +36,3 @@ resource "digitalocean_ssh_key" "key" {
   public_key = file(var.public_keyname)
 
 }
-
-resource "digitalocean_firewall" "firewall" {
-  depends_on = [digitalocean_droplet.droplet]
-  name       = var.name
-
-  droplet_ids = [digitalocean_droplet.droplet.id]
-
-  inbound_rule {
-    protocol         = "tcp"
-    port_range       = "22"
-    source_addresses = ["0.0.0.0/0"]
-  }
-}
-
-
