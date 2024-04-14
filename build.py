@@ -128,11 +128,11 @@ def setup_terraform(
     return project_path, provider1, provider2, chain_id
 
 
-def ansible_deploy(
+def ansible_build(
     script_path: str, project_path: str, provider1: str, provider2: str, chain_id: str
 ) -> tuple:
     hop1_resource_name, hop2_resource_name, wg_port1, wg_port2 = random_values()
-    command = f"ansible-playbook {script_path}/ansible/deploy.yml -e project_path={project_path} -e provider1={provider1} -e provider2={provider2} -e project_id={chain_id} \
+    command = f"ansible-playbook {script_path}/ansible/build.yml -e project_path={project_path} -e provider1={provider1} -e provider2={provider2} -e project_id={chain_id} \
                 -e hop1_resource_name={hop1_resource_name} -e hop2_resource_name={hop2_resource_name} -e wg_port1={wg_port1} -e wg_port2={wg_port2}"
 
     process = subprocess.Popen(
@@ -187,7 +187,7 @@ if __name__ == "__main__":
     )
 
     generate_keys(project_path)
-    provider1_ip, provider2_ip = ansible_deploy(
+    provider1_ip, provider2_ip = ansible_build(
         script_path, project_path, provider1, provider2, chain_id
     )
     receipt_data = create_receipt_file(

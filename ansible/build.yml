@@ -3,7 +3,7 @@
   tasks:
     - name: Deploy role
       include_role:
-        name: ./roles/deploy
+        name: ./roles/build
 
   vars:
     hop1_name: "hop1_{{ provider1 }}"

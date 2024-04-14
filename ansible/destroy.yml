@@ -1,22 +1,8 @@
 ---
 - hosts: localhost
   tasks:
-    - name: Deploy role
-      include_role:
-        name: ./roles/deploy
-
-  vars:
-    hop1_name: "hop1_{{ provider1 }}"
-    hop2_name: "hop2_{{ provider2 }}"
-    project_path: "{{ project_path }}"
-    project_id: "{{ project_id }}"
-    wg_port1: "{{ wg_port1 }}"
-    wg_port2: "{{ wg_port2 }}"
-    hop1_resource_name: "{{ hop1_resource_name }}"
-    hop2_resource_name: "{{ hop2_resource_name }}"
-    socks_proxy: True
-
-- hosts: all
-  tasks:
-    - name: Ping all hosts
-      ansible.builtin.ping:
+  - name: Destroy resources
+    terraform:
+      project_path: "{{ project_path }}"
+      force_init: true
+      state: absent
