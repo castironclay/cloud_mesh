@@ -24,4 +24,4 @@ RUN set -x && \
 
 RUN terraform init
     
-WORKDIR /root/work
+WORKDIR /work/cloud_mesh

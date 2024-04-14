@@ -1,5 +1,5 @@
 ---
 first_hop:
-  - gcp
+  - linode
 second_hop:
   - vultr

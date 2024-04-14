@@ -37,50 +37,6 @@
     regexp: "wireguardport"
     replace: "{{ wg_port1 }}"
 
-- name: Deploy resources 1
-  terraform:
-    project_path: "{{ project_path }}"
-    force_init: true
-    state: present
-    targets: ["module.hop1_aws.random_shuffle.regions", "module.hop2_aws.random_shuffle.regions"]
-  when: provider1 == "aws"
-  register: deployment1
-
-- name: Deploy resources 1
-  terraform:
-    project_path: "{{ project_path }}"
-    force_init: true
-    state: present
-    targets: ["module.hop1_exoscale.data.exoscale_template.my_template", "module.hop2_exoscale.data.exoscale_template.my_template"]
-  when: provider1 == "exoscale"
-  register: deployment1
-
-- name: Deploy resources 1
-  terraform:
-    project_path: "{{ project_path }}"
-    force_init: true
-    state: present
-  register: deployment1
-
-- name: Start SOCKS proxy
-  shell:
-    cmd: "ssh -4 -D 12345 -f -C -N -S /root/{{ deployment1.outputs.hop1_public_ip.value}}_ssh.sock -M -o StrictHostKeyChecking=no -i id_ssh_rsa1 admin@{{ deployment1.outputs.hop1_public_ip.value }}"
-    chdir: "{{ project_path }}"
-  when: socks_proxy
-  when: ( provider1 == "aws" or provider1 == "gcp" )
-
-- name: Start SOCKS proxy
-  shell:
-    cmd: "ssh -4 -D 12345 -f -C -N -S /root/{{ deployment1.outputs.hop1_public_ip.value}}_ssh.sock -M -o StrictHostKeyChecking=no -i id_ssh_rsa1 root@{{ deployment1.outputs.hop1_public_ip.value }}"
-    chdir: "{{ project_path }}"
-  when: socks_proxy
-  when: ( provider1 == "linode" or provider1 == "exoscale" or provider1 == "vultr" or provider1 == "digitalocean" )
-
-- name: Pause 5 seconds to ensure proxy is established
-  pause:
-    seconds: 5
-  when: socks_proxy
-
 # Update fact prior to template
 - set_fact:
     hop_name: "{{ hop2_name }}"
@@ -119,42 +75,30 @@
     regexp: "wireguardport"
     replace: "{{ wg_port2 }}"
 
-- name: Deploy resources 2
+- name: AWS shuffle regions
   terraform:
     project_path: "{{ project_path }}"
     force_init: true
     state: present
     targets: ["module.hop1_aws.random_shuffle.regions", "module.hop2_aws.random_shuffle.regions"]
-  when: provider2 == "aws"
-  environment:
-    http_proxy: socks5://127.0.0.1:12345
-    https_proxy: socks5://127.0.0.1:12345
-    all_proxy: socks5://127.0.0.1:12345
-  register: deployment2
+  when: provider1 == "aws" or provider2 == "aws"
+  register: deployment
 
-- name: Deploy resources 2
+- name: Exoscale shuffle regions
   terraform:
     project_path: "{{ project_path }}"
     force_init: true
     state: present
     targets: ["module.hop1_exoscale.data.exoscale_template.my_template", "module.hop2_exoscale.data.exoscale_template.my_template"]
-  when: provider2 == "exoscale"
-  environment:
-    http_proxy: socks5://127.0.0.1:12345
-    https_proxy: socks5://127.0.0.1:12345
-    all_proxy: socks5://127.0.0.1:12345
-  register: deployment2
+  when: provider1 == "exoscale" or provider2 == "exoscale"
+  register: deployment
 
-- name: Deploy resources 2
+- name: Deploy resources
   terraform:
     project_path: "{{ project_path }}"
     force_init: true
     state: present
-  environment:
-    http_proxy: socks5://localhost:12345
-    https_proxy: socks5://localhost:12345
-    all_proxy: socks5://localhost:12345
-  register: deployment2
+  register: deployment
 
 - name: Host 1
   include_tasks: host1.yml
