@@ -16,7 +16,15 @@
     hop2_resource_name: "{{ hop2_resource_name }}"
     socks_proxy: True
 
-- hosts: all
+- hosts: ephemeral
   tasks:
     - name: Ping all hosts
       ansible.builtin.ping:
+
+    # - name: Provision role
+    #   include_role:
+    #     name: ./roles/provision
+    #
+    # - name: Include vars
+    #   include_vars:
+    #     file: ./roles/provision/vars/main.yml

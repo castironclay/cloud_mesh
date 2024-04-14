@@ -2,7 +2,7 @@
   add_host:
     name: hop1
     ansible_host: "{{ deployment.outputs.hop1_public_ip.value }}"
-    groups: "{{ provider1 }}_hop1"
+    groups: "ephemeral"
     ansible_ssh_private_key_file: "{{ project_path }}/id_ssh_rsa1"
     ansible_user: admin
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
@@ -13,7 +13,7 @@
   add_host:
     name: hop1
     ansible_host: "{{ deployment.outputs.hop1_public_ip.value }}"
-    groups: "{{ provider1 }}_hop1"
+    groups: "ephemeral"
     ansible_ssh_private_key_file: "{{ project_path }}/id_ssh_rsa1"
     ansible_user: root
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
