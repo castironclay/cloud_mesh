@@ -11,4 +11,4 @@
     image: nginx
     volumes:
       - /root/stream.conf:/etc/nginx/nginx.conf
-    ports: "{{ nginx_listen_port }}:{{ nginx_listen_port }}/udp"
+    ports: "{{ wg_port }}:{{ wg_port }}/udp"

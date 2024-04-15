@@ -19,9 +19,11 @@
     env:
       PUID: "1000"
       PGID: "1000"
-      PEERS: "1"
+      PEERS: "5"
       TZ: "Etc/UTC"
-      PERSISTENTKEEPALIVE_PEERS: "30"
+      PERSISTENTKEEPALIVE_PEERS: "all"
+      SERVERURL: "{{ hop1_ip }}"
+      SERVERPORT: "{{ wg_port }}"
     sysctls:
       net.ipv4.conf.all.src_valid_mark: 1
 

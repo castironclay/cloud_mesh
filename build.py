@@ -32,9 +32,8 @@ def random_values() -> tuple:
     hop2_resource_name = "".join(random.choices(string.ascii_lowercase, k=N))
 
     wg_port = random.randint(20000, 50000)
-    nginx_listen_port = random.randint(20000, 50000)
 
-    return hop1_resource_name, hop2_resource_name, wg_port, nginx_listen_port
+    return hop1_resource_name, hop2_resource_name, wg_port 
 
 
 def read_creds_file(creds) -> dict:
@@ -131,10 +130,9 @@ def setup_terraform(
 def ansible_build(
     script_path: str, project_path: str, provider1: str, provider2: str, chain_id: str
 ) -> tuple:
-    hop1_resource_name, hop2_resource_name, wg_port, nginx_listen_port = random_values()
+    hop1_resource_name, hop2_resource_name, wg_port = random_values()
     command = f"ansible-playbook {script_path}/ansible/build.yml -e project_path={project_path} -e provider1={provider1} -e provider2={provider2} -e project_id={chain_id} \
-    -e hop1_resource_name={hop1_resource_name} -e hop2_resource_name={hop2_resource_name} -e wg_port={wg_port} \
-    -e nginx_listen_port={nginx_listen_port}"
+    -e hop1_resource_name={hop1_resource_name} -e hop2_resource_name={hop2_resource_name} -e wg_port={wg_port}"
 
     process = subprocess.Popen(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
