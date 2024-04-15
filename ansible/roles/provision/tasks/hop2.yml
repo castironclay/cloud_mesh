@@ -10,7 +10,7 @@
     name: wireguard
     image: lscr.io/linuxserver/wireguard
     volumes:
-      - /root/wg_config:/config
+      - /root/wg_configs:/config
       - /lib/modules:/lib/modules
     ports: "{{ wg_port }}:51820/udp"
     capabilities:
@@ -26,6 +26,13 @@
       SERVERPORT: "{{ wg_port }}"
     sysctls:
       net.ipv4.conf.all.src_valid_mark: 1
+
+- name: Retrieve wireguard configs
+  synchronize:
+    recursive: true
+    mode: pull
+    src: /root/wg_configs
+    dest: "/tmp/wg_configs_{{ project_id}}"
 
 
 
