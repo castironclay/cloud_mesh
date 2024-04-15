@@ -1,67 +1,29 @@
 ---
-- name: Update DNS
-  become: true
-  shell: echo "nameserver 1.1.1.1" >> /etc/resolv.conf
-
-- name: Install Unbound and Wireguard
+- name: Install Wireguard
   become: true
   apt:
     name:
-      - unbound
+      - wireguard
 
-- name: Copy Unbound Config File
-  become: true
-  template:
-    src: templates/unbound.conf
+- name: Create wireguard container
+  docker_container:
+    name: wireguard
+    image: lscr.io/linuxserver/wireguard
+    volumes:
+      - /root/wg_config:/config
+      - /lib/modules:/lib/modules
+    ports: "{{ wg_port }}:51820/udp"
+    capabilities:
+      - net_admin
+      - sys_module
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      PEERS: "1"
+      TZ: "Etc/UTC"
+      PERSISTENTKEEPALIVE_PEERS: "30"
+    sysctls:
+      net.ipv4.conf.all.src_valid_mark: 1
 
-- name: Stop Systemd-Resolved
-  become: true
-  systemd:
-    name: systemd-resolved
-    state: stopped
 
-- name: Disable Systemd-Resolved
-  become: true
-  systemd:
-    name: systemd-resolved
-    enabled: no
-    masked: yes
 
-- name: Enable Unbound
-  become: true
-  systemd:
-    name: unbound
-    enabled: yes
-    masked: no
-
-- name: Grab DNS file
-  become: true
-  shell: curl -o /var/lib/unbound/root.hints https://www.internic.net/domain/named.cache
-
-- name: Start Unbound
-  become: true
-  systemd:
-    name: unbound
-    state: restarted
-
-- name: Enable Unbound-resolvconf
-  become: true
-  systemd:
-    name: unbound-resolvconf
-    enabled: yes
-    masked: no
-
-- name: Start Unbound-Resolvconf
-  become: true
-  systemd:
-    name: unbound-resolvconf
-    state: restarted
-
-- name: Chown unbound directory
-  become: true
-  file:
-    path: /var/lib/unbound
-    state: directory
-    recurse: yes
-    owner: unbound
-    group: unbound

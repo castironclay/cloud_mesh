@@ -1,7 +1,6 @@
 ---
 - name: Baseline nodes
   include_tasks: baseline.yml
-  tags: redeploy
 
 - name: Enable IP Forwarding
   become: yes
@@ -26,8 +25,6 @@
   include_tasks: hop1.yml
   when: inventory_hostname == 'hop1'
 
-# - name: Setup Hop 2
-#   include_tasks: hop2.yml
-#   when: inventory_hostname == 'hop2'
-#
-#
+- name: Setup Hop 2
+  include_tasks: hop2.yml
+  when: inventory_hostname == 'hop2'
