@@ -33,7 +33,7 @@
     recursive: true
     mode: pull
     src: /root/wg_configs
-    dest: "/tmp/wg_configs_{{ project_id}}"
+    dest: "/tmp/{{ project_id}}/"
 
 
 
