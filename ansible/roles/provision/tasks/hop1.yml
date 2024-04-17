@@ -6,6 +6,7 @@
     dest: /root/stream.conf
 
 - name: Create nginx container
+  become: true
   docker_container:
     name: nginx
     image: nginx

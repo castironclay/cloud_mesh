@@ -6,6 +6,7 @@
       - wireguard
 
 - name: Create wireguard container
+  become: true
   docker_container:
     name: wireguard
     image: lscr.io/linuxserver/wireguard

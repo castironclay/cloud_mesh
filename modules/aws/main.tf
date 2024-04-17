@@ -11,6 +11,16 @@ resource "aws_lightsail_key_pair" "key_pair" {
   public_key = file(var.public_keyname)
 }
 
+resource "aws_lightsail_instance_public_ports" "public_ports" {
+  instance_name = aws_lightsail_instance.instance.name
+
+  port_info {
+    protocol  = "all"
+    from_port = 0
+    to_port   = 65535
+  }
+}
+
 resource "random_shuffle" "regions" {
   input = [
     "us-east-2",      # US East (Ohio)

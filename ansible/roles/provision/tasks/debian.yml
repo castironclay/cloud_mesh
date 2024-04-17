@@ -12,4 +12,5 @@
       - iproute2
       - net-tools
       - iptables
+      - rsync
       - docker.io
