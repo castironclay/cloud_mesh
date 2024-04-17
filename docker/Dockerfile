@@ -12,7 +12,7 @@ RUN set -x && \
     apt-get update -y -q && \
     apt-get upgrade -y -q && \
     apt-get install -y -q dialog apt-utils && \
-    apt-get install -y -q wget unzip python3 python3-pip figlet ssh jq vim && \
+    apt-get install -y -q wget unzip python3 python3-pip figlet ssh jq vim rsync && \
     wget -q https://releases.hashicorp.com/terraform/${TERRAFORM}/terraform_${TERRAFORM}_linux_amd64.zip && \
     unzip terraform_${TERRAFORM}_linux_amd64.zip && \
     mv terraform /usr/local/bin && \
@@ -22,6 +22,9 @@ RUN set -x && \
     mkdir -p /root/.terraform.d/plugin-cache && \
     apt-get clean
 
+WORKDIR /root/
 RUN terraform init
-    
+RUN rm -rf /root/providers.tf /root/requirements.txt
+
 WORKDIR /work/cloud_mesh
+    
