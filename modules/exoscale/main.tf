@@ -5,7 +5,7 @@ data "exoscale_template" "my_template" {
 
 resource "exoscale_compute_instance" "my_instance" {
   depends_on  = [data.exoscale_template.my_template, exoscale_ssh_key.my_ssh_key]
-  zone        = element(data.exoscale_zones.example_zones.zones, random_integer.zone.result)
+  zone        = random_shuffle.regions.result[0]
   name        = var.name
   template_id = data.exoscale_template.my_template.id
   type        = "standard.medium"
@@ -29,11 +29,16 @@ resource "exoscale_ssh_key" "my_ssh_key" {
   public_key = file(var.public_keyname)
 }
 
-data "exoscale_zones" "example_zones" {}
-
-
-resource "random_integer" "zone" {
-  depends_on = [data.exoscale_zones.example_zones]
-  min        = 1
-  max        = length(data.exoscale_zones.example_zones.zones)
+resource "random_shuffle" "regions" {
+  input = [
+    "de-fra-1", # DE-FRA-1 - Frankfurt, Germany
+    "de-muc-1", # DE-MUC-1 - Munich, Germany
+    "at-vie-1", # AT-VIE-1 - Vienna, Austria
+    "at-vie-2", # AT-VIE-2 - Vienna, Austria
+    "ch-gva-2", # CH-GVA-2 - Geneva, Switzerland
+    "ch-dk-2",  # CH-DK-2 - Zurich, Switzerland
+    "bg-sof-1", # BG-SOF-1 - Sofia, Bulgaria
+  ]
+  result_count = 1
 }
+
