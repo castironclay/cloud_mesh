@@ -1,5 +1,5 @@
 ---
 first_hop:
-  - linode
+  - aws
 second_hop:
-  - vultr
+  - digitalocean
