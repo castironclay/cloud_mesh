@@ -27,38 +27,38 @@ resource "vultr_ssh_key" "my_ssh_key" {
 
 resource "random_shuffle" "regions" {
   input = [
-    "ams",
-    "atl",
-    "blr",
-    "bom",
-    "cdg",
-    "del",
-    "dfw",
-    "ewr",
-    "fra",
-    "hnl",
-    "icn",
-    "itm",
-    "jnb",
-    "lax",
-    "lhr",
-    "mad",
-    "man",
-    "mel",
-    "mex",
-    "mia",
-    "nrt",
-    "ord",
-    "sao",
-    "scl",
-    "sea",
-    "sgp",
-    "sjc",
-    "sto",
-    "syd",
-    "tlv",
-    "waw",
-    "yto"
+    "ams", # Amsterdam, Netherlands
+    "atl", # Atlanta, United States
+    "blr", # Bangalore, India
+    "bom", # Mumbai, India
+    "cdg", # Paris, France
+    "del", # Delhi, India
+    "dfw", # Dallas/Fort Worth, United States
+    "ewr", # Newark, United States
+    "fra", # Frankfurt, Germany
+    "hnl", # Honolulu, United States
+    "icn", # Seoul, South Korea
+    "itm", # Osaka, Japan
+    "jnb", # Johannesburg, South Africa
+    "lax", # Los Angeles, United States
+    "lhr", # London Heathrow, United Kingdom
+    "mad", # Madrid, Spain
+    "man", # Manchester, United Kingdom
+    "mel", # Melbourne, Australia
+    "mex", # Mexico City, Mexico
+    "mia", # Miami, United States
+    "nrt", # Tokyo Narita, Japan
+    "ord", # Chicago O'Hare, United States
+    "sao", # São Paulo, Brazil
+    "scl", # Santiago, Chile
+    "sea", # Seattle, United States
+    "sgp", # Singapore
+    "sjc", # San Jose, United States
+    "sto", # Stockholm, Sweden
+    "syd", # Sydney, Australia
+    "tlv", # Tel Aviv, Israel
+    "waw", # Warsaw, Poland
+    "yto", # Toronto, Canada
   ]
   result_count = 1
 }

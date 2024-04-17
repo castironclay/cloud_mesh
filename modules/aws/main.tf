@@ -12,7 +12,21 @@ resource "aws_lightsail_key_pair" "key_pair" {
 }
 
 resource "random_shuffle" "regions" {
-  input = ["us-east-1", "us-east-2", "us-west-2", "ca-central-1",
-  "eu-west-1", "eu-west-2", "eu-west-3", "eu-central-1", "eu-north-1"]
+  input = [
+    "us-east-2",      # US East (Ohio)
+    "us-east-1",      # US East (N. Virginia)
+    "us-west-2",      # US West (Oregon)
+    "ap-south-1",     # Asia Pacific (Mumbai)
+    "ap-northeast-2", # Asia Pacific (Seoul)
+    "ap-southeast-1", # Asia Pacific (Singapore)
+    "ap-southeast-2", # Asia Pacific (Sydney)
+    "ap-northeast-1", # Asia Pacific (Tokyo)
+    "ca-central-1",   # Canada (Central)
+    "eu-central-1",   # EU (Frankfurt)
+    "eu-west-1",      # EU (Ireland)
+    "eu-west-2",      # EU (London)
+    "eu-west-3",      # EU (Paris)
+    "eu-north-1",     # EU (Stockholm)
+  ]
   result_count = 1
 }
