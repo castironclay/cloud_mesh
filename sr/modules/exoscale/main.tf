@@ -1,5 +1,5 @@
 data "exoscale_template" "my_template" {
-  zone = element(data.exoscale_zones.example_zones.zones, random_integer.zone.result)
+  zone = random_shuffle.regions.result[0]
   name = "Linux Debian 12 (Bookworm) 64-bit"
 }
 
