@@ -14,7 +14,7 @@ RUN set -x && \
     apt-get update -y -q && \
     apt-get upgrade -y -q && \
     apt-get install -y -q dialog apt-utils && \
-    apt-get install -y -q wget unzip python3 python3-pip figlet ssh jq vim rsync wireguard-tools iproute2 curl
+    apt-get install -y -q wget unzip python3 python3-pip figlet ssh jq vim rsync wireguard-tools iproute2 curl openresolv
 
 # Terraform setup
 RUN wget -q https://releases.hashicorp.com/terraform/${TERRAFORM}/terraform_${TERRAFORM}_linux_amd64.zip && \
@@ -23,20 +23,20 @@ RUN wget -q https://releases.hashicorp.com/terraform/${TERRAFORM}/terraform_${TE
     rm terraform_${TERRAFORM}_linux_amd64.zip && \
     mkdir -p /root/.terraform.d/plugin-cache
 
+# WGCF Setup
+RUN curl  -fsSL git.io/wgcf.sh | bash && mkdir -p /wgcf
+
 # Python packages
 RUN pip install --upgrade pip && \
     pip install -r /root/requirements.txt && \
     apt-get clean
 
-# WGCF setup
-RUN wget -q https://github.com/ViRb3/wgcf/releases/download/v2.2.22/wgcf_2.2.22_linux_386 && \
-    chmod +x wgcf_2.2.22_linux_386 &&\
-    mv wgcf_2.2.22_linux_386 /usr/local/bin/wgcf && \
-    wgcf register --accept-tos && \
-    wgcf generate
-    
 RUN terraform init && \
     rm -rf /root/providers.tf /root/requirements.txt
 
 WORKDIR /work/sr
     
+COPY entry.sh /entry.sh
+RUN chmod +x /entry.sh
+
+ENTRYPOINT ["/entry.sh"]
