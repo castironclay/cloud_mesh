@@ -14,9 +14,9 @@ from jinja2 import Environment, FileSystemLoader
 from loguru import logger
 from rich import print as rprint
 
-from gen_ssh import generate_keys
-from parse_state import get_ips
-from vars_setup import generate_vars_file
+from sr.gen_ssh import generate_keys
+from sr.parse_state import get_ips
+from sr.vars_setup import generate_vars_file
 
 environment = Environment(
     loader=FileSystemLoader(f"{os.path.dirname(os.path.abspath(__file__))}/templates/")
@@ -175,7 +175,8 @@ def create_receipt_file(
     return json_data
 
 
-if __name__ == "__main__":
+def build():
+# if __name__ == "__main__":
     script_path = os.path.dirname(os.path.abspath(__file__))
     creds_file = f"{script_path}/keys.yaml"
     providers = f"{script_path}/providers.yaml"
@@ -186,10 +187,10 @@ if __name__ == "__main__":
     )
 
     generate_keys(project_path)
-    provider1_ip, provider2_ip = ansible_build(
-        script_path, project_path, provider1, provider2, chain_id
-    )
-    receipt_data = create_receipt_file(
-        project_path, provider1, provider2, provider1_ip, provider2_ip, chain_id
-    )
-    logger.success(receipt_data)
+    # provider1_ip, provider2_ip = ansible_build(
+    #     script_path, project_path, provider1, provider2, chain_id
+    # )
+    # receipt_data = create_receipt_file(
+    #     project_path, provider1, provider2, provider1_ip, provider2_ip, chain_id
+    # )
+    # logger.success(receipt_data)

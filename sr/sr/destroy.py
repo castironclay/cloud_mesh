@@ -54,8 +54,7 @@ def ansible_destroy(script_path: str, project_path: str):
         rprint(line, end="")
     process.wait()
 
-
-if __name__ == "__main__":
+def destroy():
     script_path = os.path.dirname(os.path.abspath(__file__))
     base_path = "/tmp"
     uuid_folders = list_folders(base_path)
@@ -67,4 +66,3 @@ if __name__ == "__main__":
         print(f"You selected: {selected_folder}")
         project_path = f"{base_path}/{selected_folder}"
         ansible_destroy(script_path, project_path)
-        shutil.rmtree(project_path)
