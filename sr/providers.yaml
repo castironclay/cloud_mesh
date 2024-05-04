@@ -1,5 +1,0 @@
----
-first_hop:
-  - exoscale
-second_hop:
-  - vultr

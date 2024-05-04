@@ -187,10 +187,10 @@ def build():
     )
 
     generate_keys(project_path)
-    # provider1_ip, provider2_ip = ansible_build(
-    #     script_path, project_path, provider1, provider2, chain_id
-    # )
-    # receipt_data = create_receipt_file(
-    #     project_path, provider1, provider2, provider1_ip, provider2_ip, chain_id
-    # )
-    # logger.success(receipt_data)
+    provider1_ip, provider2_ip = ansible_build(
+        script_path, project_path, provider1, provider2, chain_id
+    )
+    receipt_data = create_receipt_file(
+        project_path, provider1, provider2, provider1_ip, provider2_ip, chain_id
+    )
+    logger.success(receipt_data)
