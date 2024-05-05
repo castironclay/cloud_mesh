@@ -47,7 +47,7 @@ RUN terraform init && \
 
 RUN echo 'plugin_cache_dir = "/root/.terraform.d/plugin-cache"' > /root/.terraformrc
 
-WORKDIR /root/work/sr
+WORKDIR /root/
     
 COPY entry.sh /entry.sh
 RUN chmod +x /entry.sh

@@ -150,13 +150,20 @@ def create_receipt_file(
     now = datetime.datetime.now()
     receipt["created"] = now.strftime("%Y-%m-%d %H:%M:%S")
     receipt["id"] = str(chain_id)
+    
     receipt["provider1"] = provider1
     receipt["provider1_ip"] = provider1_ip
-    receipt["provider1_user"] = provider1_user
+    if (provider1 == 'gcp' or provider1 == 'aws'):
+        receipt["provider1_user"] = 'admin'
+    else:
+        receipt["provider1_user"] = 'root'
 
     receipt["provider2"] = provider2
-    receipt["provider2_ip"] = provider1_ip
-    receipt["provider2_user"] = provider2_user
+    receipt["provider2_ip"] = provider2_ip
+    if (provider2 == 'gcp' or provider2 == 'aws'):
+        receipt["provider2_user"] = 'admin'
+    else:
+        receipt["provider2_user"] = 'root'
 
     json_data = json.dumps(receipt)
 
