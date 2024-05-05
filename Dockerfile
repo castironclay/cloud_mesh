@@ -43,7 +43,7 @@ RUN wget -q https://releases.hashicorp.com/terraform/${TERRAFORM}/terraform_${TE
 RUN curl  -fsSL git.io/wgcf.sh | bash && mkdir -p /wgcf
 
 RUN terraform init && \
-    rm -rf /root/providers.tf && /root/sr-0.1.0.tar.gz
+    rm -rf /root/providers.tf /root/sr-0.1.0.tar.gz
 
 RUN echo 'plugin_cache_dir = "/root/.terraform.d/plugin-cache"' > /root/.terraformrc
 
