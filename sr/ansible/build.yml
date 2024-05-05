@@ -21,6 +21,7 @@
     - name: Provision role
       include_role:
         name: ./roles/provision
+      when: not clean
       vars:
         hop1_ip: "{{ hostvars['hop1'].ansible_host }}"
         hop2_ip: "{{ hostvars['hop2'].ansible_host }}"

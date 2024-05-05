@@ -36,7 +36,7 @@ def random_values() -> tuple:
     return hop1_resource_name, hop2_resource_name, wg_port 
 
 
-def read_creds_file(creds) -> dict:
+def read_creds_file(creds: Path) -> dict:
     with open(creds, "r") as creds_file:
         all_creds = yaml.safe_load(creds_file)
 
@@ -55,13 +55,12 @@ def choose_one(providers: list) -> list[str]:
     return chosen_provider
 
 
-def providers_with_creds(creds: dict, providers: list[str]) -> list:
-    valid_providers = []
-    for provider in providers:
-        if provider in creds.keys():
-            valid_providers.append(provider)
+def providers_with_creds(creds: dict, provider) -> bool:
+    if provider in creds.keys():
+        return True
 
-    return valid_providers
+    else:
+        return False
 
 
 def make_op_path(base_path: str) -> UUID:
@@ -93,21 +92,11 @@ def copy_specific_modules(
 
 
 def setup_terraform(
-    script_path: str, creds_file: str, providers: str, base_path: str
+    script_path: str, creds_file: Path, provider1: str, provider2: str, base_path: str
 ) -> tuple:
     creds = read_creds_file(creds_file)
-    gathered_providers = gather_providers(providers)
-
-    valid_hop1_providers = providers_with_creds(
-        creds, gathered_providers.get("first_hop")
-    )
-    valid_hop2_providers = providers_with_creds(
-        creds, gathered_providers.get("second_hop")
-    )
 
     # Choose first and second hop providers
-    provider1 = choose_one(valid_hop1_providers)[0]
-    provider2 = choose_one(valid_hop2_providers)[0]
     logger.success(f"Provider 1: {provider1} | Provider 2: {provider2}")
 
     # Move modules to project directory
@@ -122,17 +111,16 @@ def setup_terraform(
             f"{script_path}/{creds.get('gcp').get('creds_file')}",
             f"{base_path}/{chain_id}/{creds.get('gcp').get('creds_file')}",
         )
-
     project_path = f"{base_path}/{chain_id}"
-    return project_path, provider1, provider2, chain_id
+    return project_path, chain_id
 
 
 def ansible_build(
-    script_path: str, project_path: str, provider1: str, provider2: str, chain_id: str
+    script_path: str, project_path: str, provider1: str, provider2: str, chain_id: str, clean: bool
 ) -> tuple:
     hop1_resource_name, hop2_resource_name, wg_port = random_values()
     command = f"ansible-playbook {script_path}/ansible/build.yml -e project_path={project_path} -e provider1={provider1} -e provider2={provider2} -e project_id={chain_id} \
-    -e hop1_resource_name={hop1_resource_name} -e hop2_resource_name={hop2_resource_name} -e wg_port={wg_port}"
+    -e hop1_resource_name={hop1_resource_name} -e hop2_resource_name={hop2_resource_name} -e wg_port={wg_port} -e clean={clean}"
 
     process = subprocess.Popen(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
@@ -163,9 +151,12 @@ def create_receipt_file(
     receipt["created"] = now.strftime("%Y-%m-%d %H:%M:%S")
     receipt["id"] = str(chain_id)
     receipt["provider1"] = provider1
-    receipt["provider2"] = provider2
     receipt["provider1_ip"] = provider1_ip
-    receipt["provider2_ip"] = provider2_ip
+    receipt["provider1_user"] = provider1_user
+
+    receipt["provider2"] = provider2
+    receipt["provider2_ip"] = provider1_ip
+    receipt["provider2_user"] = provider2_user
 
     json_data = json.dumps(receipt)
 
@@ -175,22 +166,20 @@ def create_receipt_file(
     return json_data
 
 
-def build():
+def build(provider1, provider2, creds_file, clean):
 # if __name__ == "__main__":
     script_path = os.path.dirname(os.path.abspath(__file__))
-    creds_file = f"{script_path}/keys.yaml"
-    providers = f"{script_path}/providers.yaml"
     base_path = "/tmp"
 
-    project_path, provider1, provider2, chain_id = setup_terraform(
-        script_path, creds_file, providers, base_path
+    project_path, chain_id = setup_terraform(
+        script_path, creds_file, provider1, provider2, base_path
     )
 
     generate_keys(project_path)
-    # provider1_ip, provider2_ip = ansible_build(
-    #     script_path, project_path, provider1, provider2, chain_id
-    # )
-    # receipt_data = create_receipt_file(
-    #     project_path, provider1, provider2, provider1_ip, provider2_ip, chain_id
-    # )
-    # logger.success(receipt_data)
+    provider1_ip, provider2_ip = ansible_build(
+        script_path, project_path, provider1, provider2, chain_id, clean
+    )
+    receipt_data = create_receipt_file(
+        project_path, provider1, provider2, provider1_ip, provider2_ip, chain_id
+    )
+    logger.success(receipt_data)
