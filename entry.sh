@@ -36,10 +36,10 @@ runwgcf() {
   cp wgcf-profile.conf /etc/wireguard/wgcf.conf
 
   sed -i 's/AllowedIPs = ::/#AllowedIPs = ::/' /etc/wireguard/wgcf.conf
-  sed -i 's/DNS = ::/#DNS = ::/' /etc/wireguard/wgcf.conf
+  sed -i 's/DNS = /#DNS = /' /etc/wireguard/wgcf.conf
   sed -i '/^Address = \([0-9a-fA-F]\{1,4\}:\)\{7\}[0-9a-fA-F]\{1,4\}\/[0-9]\{1,3\}/s/^/#/' /etc/wireguard/wgcf.conf
   wg-quick up wgcf
-  echo 1.1.1.1 > /etc/resolv.conf
+  echo 'nameserver 1.1.1.1' > /etc/resolv.conf
   
   _checkV4
 
@@ -54,10 +54,10 @@ runwgcf() {
 
 _checkV4() {
   echo "Checking network status, please wait...."
-  while ! curl --max-time 2  https://ipinfo.io; do
+  while ! curl --max-time 5  https://ipinfo.io; do
     wg-quick down wgcf
-    echo "Sleep 2 and retry again."
-    sleep 2
+    echo "Sleep 5 and retry again."
+    sleep 5
     wg-quick up wgcf
   done
 
